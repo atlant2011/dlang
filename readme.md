@@ -10,4 +10,5 @@ every use you do of any scripts.
 
 
 Author(s):
-*Alexandre "TryHard" Leblanc, <alex.cs00 [at] mail [dot] com>
+
+* Alexandre "TryHard" Leblanc, <alex.cs00 [at] mail [dot] com>
