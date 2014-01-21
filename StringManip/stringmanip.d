@@ -14,6 +14,7 @@
 					o replaceFirst		:	Replace first occurence by an element in the string given (reference).
 					o replaceLastCopy	:	Replace last occurence by an element in a copied string.
 					o replaceLast		:	Replace last occurence by an element in the string given (reference).
+					o replaceNCopy		:	Replace th n-th occurence by an element in a copied string given.
 					o replaceAllCopy	:	Replace all occurences by an element in a copied string.
 					o replaceAll		:	Replace all occurences by an element in the string given (reference).
 
@@ -300,6 +301,48 @@ public static class StringManip
 
 		// Return true for success
 		return true;
+	}
+
+	/**
+	 * replaceNCopy Replace n-th occurence by the given replacement 'bythat'. 
+	 * @param wthis Occurence to replace
+	 * @param bythat Element replacing the occurence
+	 * @param n N-th occurence to replace
+	 * @param inthat String to replace term in.
+	 * @returns A copy of the string with replaced n-th occurence.
+	 */
+	public static wstring replaceNCopy(immutable wstring wthis, immutable wstring bythat, immutable byte n, wstring inthat)
+	{
+		// Before continuing, abort if occurence not even found.
+		if(std.string.indexOf(inthat, wthis) < 0)
+			return inthat;
+
+		// Initialize index.
+		byte i = 0;
+
+		// Declare after string.
+		wstring after = inthat.dup;	
+
+		// While we found occurence and we've haven't reached the number of occurence...
+		// Increment and ge the after part.
+		while(i < n-1 && std.string.indexOf(after, wthis) >= 0)
+		{
+			after = getAfter(wthis, after);
+			i++;
+		}
+
+		// If we don't find anything or n isn't corresponding 
+		if(std.string.indexOf(after, wthis) < 0 || i+1 != n)
+			return inthat;
+	
+		// Get the part before
+		wstring before = getBefore(after, inthat);
+
+		// Replace in the part after
+		after = replaceFirstCopy(wthis, bythat, after);
+
+		// Return concataned string.
+		return before ~ after;		
 	}
 
 	/**
