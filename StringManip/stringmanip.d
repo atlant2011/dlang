@@ -4,6 +4,7 @@
 	DESCRIPTION:	Class used to play more with strings. 
 					o getBetween		:	Get the string between 2 occurences in given string.
 					o getBetweenLast	:	Get the string between the 2 last occurences in given string.
+					o getBetweenN		:	Get the string between the N-th occurence of identifiers in given string. Occurence 0 doesn't exist. First n=1.
 					o getBetweenAll		:	Get an array of all strings between all 2 occurences in given string.
 					o getAfter			:	Get the string after the first occurence required in given string.
 					o getAfterLast		:	Get the string after the last occurence required in given string.
@@ -66,6 +67,39 @@ public static class StringManip
 			return ""w;
 
 		// Return the matching result.
+		return inthat[(f_pos + wfirst.length)..(f_pos + wfirst.length + l_pos)];
+	}
+	
+	/**
+	 * getBetweenN Get the string between N-th occurence of the identifiers in given input string
+	 * @param wfirst Opening identifier (e.g. <p>)
+	 * @paaram wlast Ending identifier (e.g. </p>)
+	 * @param n N-th occurence
+	 * @param inthat Input string to search in.
+	 * @returns String between identifiers at N-th occurence. Empty if nothing found.
+	 */
+	public static wstring getBetweenN(immutable wstring wfirst, immutable wstring wlast, immutable byte n, wstring inthat)
+	{
+		// Initialize the default n occurence to 0.
+		byte i = 0;
+		
+		// While we've not reached the n-th occurence, and that we can still find the occurence, increment index, and get
+		// what is after.
+		while(i < (n-1) && (std.string.indexOf(inthat, wfirst) >= 0 && std.string.indexOf(getAfter(wfirst, inthat), wlast) >= 0))
+		{
+			inthat = getAfter(wfirst, getAfter(wlast, inthat));
+			i++;
+		}
+
+		// If we don't find n-th occurence, just send an empty string.
+		if(std.string.indexOf(inthat, wfirst) < 0 || std.string.indexOf(getAfter(wfirst, inthat), wlast) < 0 || i+1 != n)
+			return ""w;
+
+		// Get the position of the n-th occurence.
+		auto f_pos = std.string.indexOf(inthat, wfirst);
+		auto l_pos = std.string.indexOf(getAfter(wfirst, inthat), wlast);
+
+		// Return the resulting string.
 		return inthat[(f_pos + wfirst.length)..(f_pos + wfirst.length + l_pos)];
 	}
 
