@@ -6,7 +6,7 @@ It means you can modify and use it as you wish.
 A mention of the contributors is however welcomed in 
 every use you do of any scripts.
 
-* StringManip: Usefuls methods used to manipulate strings.
+* StringManip: Useful methods used to manipulate strings.
 * Lists/dllist: Templated DoublyLinkedList*
 
 
