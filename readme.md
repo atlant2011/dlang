@@ -7,7 +7,11 @@ A mention of the contributors is however welcomed in
 every use you do of any scripts.
 
 * StringManip: Usefuls methods used to manipulate strings.
+* Lists/dllist: Templated DoublyLinkedList*
 
+
+Note: dllist still misses sort() method. It will come soon. Some code
+correction will also follow eventually. Additional methods too.
 
 Author(s):
 
