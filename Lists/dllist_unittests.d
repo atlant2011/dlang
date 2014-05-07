@@ -1,9 +1,10 @@
 import std.stdio;
+
+import std.stdio;
 import dllist;
 
-
 unittest {
-	auto list = new DoubleLinkedList!(int)();
+	auto list = new DoublyLinkedList!(int)();
 	list.insert(10);
 	list.insert(20);
 	list.insertLast(25);
@@ -93,7 +94,7 @@ unittest {
 	assert(list[1] == 13);
 	assert(list[0] == 10);
 	assert(list[3] == 15);
-	
+
 	writeln("STEP 6 : insert & insertAt after clear\n", 
 			"----------------------------\n",
 			"Expected result: [10, 13, 10, 15, 10, 10]\n",
@@ -149,7 +150,7 @@ unittest {
 	list.insert(10);
 	list.insert(10);
 	list.insertLast(10);
-	
+
 	writeln("STEP 10 : insert (again)\n", 
 			"----------------------------\n",
 			"Expected result: [10, 10, 12, 15, 10]\n",
@@ -157,7 +158,7 @@ unittest {
 			"Properties: count=", list.count, " max=", list.max,
 			" min=", list.min, " empty=", list.empty);
 	readln();
-	
+
 
 	list.removeItem(10, false);
 	assert(list[0] == 12);
@@ -180,6 +181,45 @@ unittest {
 	writeln("STEP 12 : Slice (with $)\n", 
 			"----------------------------\n",
 			"Expected result: [12, 15]\n",
+			"Obtained result: ", list.toArray(), "\n",
+			"Properties: count=", list.count, " max=", list.max,
+			" min=", list.min, " empty=", list.empty);
+	readln();
+
+	auto anotherList = new DoublyLinkedList!(int)();
+	anotherList.insertLast(11);
+	anotherList.insertLast(25);
+	anotherList.insertLast(50);
+	list.appendList(anotherList);
+
+	writeln("STEP 13 : appendList\n", 
+			"----------------------------\n",
+			"Expected result: [12, 15, 11, 25, 50]\n",
+			"Obtained result: ", list.toArray(), "\n",
+			"Properties: count=", list.count, " max=", list.max,
+			" min=", list.min, " empty=", list.empty);
+	readln();
+
+	list.clear();
+	list ~= anotherList;
+
+	writeln("STEP 14 : ~= operator\n", 
+			"----------------------------\n",
+			"Expected result: [11, 25, 50]\n",
+			"Obtained result: ", list.toArray(), "\n",
+			"Properties: count=", list.count, " max=", list.max,
+			" min=", list.min, " empty=", list.empty);
+	readln();
+	
+	list.clear();
+	list.insertLast(10);
+	list.insertLast(10);
+	list.insertLast(11);
+	list.prependList(anotherList);
+
+	writeln("STEP 15 : prependList\n", 
+			"----------------------------\n",
+			"Expected result: [11, 25, 50, 10, 10, 11]\n",
 			"Obtained result: ", list.toArray(), "\n",
 			"Properties: count=", list.count, " max=", list.max,
 			" min=", list.min, " empty=", list.empty);
