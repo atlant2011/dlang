@@ -1,6 +1,7 @@
 /+
 CLASS:			DoubleLinkedList(T)
-AUTHOR:			Alexandre "TryHard" Leblanc, <alex.cs00@mail.com>, <alex.cs00@yahoo.ca>
+AUTHORS:		Alexandre "TryHard" Leblanc, <alex.cs00@mail.com>, <alex.cs00@yahoo.ca>
+				Michael Tran 
 DESCRIPTION:	Doubly Linked List!
 # Properties
 o count					:	Number of element in the list
@@ -82,7 +83,7 @@ public class DoublyLinkedList(T) {
 	* @property count   
 	* @returns Real quantity of elements in the list (not the length)
 	*/
-	public uint count() const @property {
+	public uint count() const pure @property {
 		return m_nodesCount;
 	}
 
@@ -90,7 +91,7 @@ public class DoublyLinkedList(T) {
 	* @property empty
 	* @returns True if list is empty. False otherwise.
 	*/
-	public bool empty() const @property {
+	public bool empty() const pure @property {
 		return (m_nodesCount == 0);
 	}
 
@@ -148,7 +149,7 @@ public class DoublyLinkedList(T) {
 	* @param value Element to search
 	* @returns True if found, false otherwise
 	*/
-	public bool contains(T value) {
+	public bool contains(T value) nothrow {
 		Node* n = m_begin;
 
 		while(n != null) {
@@ -167,7 +168,7 @@ public class DoublyLinkedList(T) {
 	* @param element Element to count
 	* @returns : Number of element's occurences in the list.
 	*/
-	public uint countItem(T element) {
+	public uint countItem(T element) nothrow {
 		Node* n = m_begin;
 		uint count = 0;
 
@@ -193,8 +194,10 @@ public class DoublyLinkedList(T) {
 		if(m_nodesCount < 2) {
 			return m_begin.value;
 		}
+
 		T maxVal = m_begin.value;
 		Node* n = m_begin.next;
+
 		while(n != null) {
 			if(n.value > maxVal) {
 				maxVal = n.value;
@@ -274,7 +277,7 @@ public class DoublyLinkedList(T) {
 	* insert Inserts an element on top of the list (becomes first)
 	* @param value Value to insert in the list
 	*/
-	public void insert(T value) {
+	public void insert(T value) nothrow {
 		// Copy the pointer of the will-be-second-in-list element
 		Node* d = m_begin;
 
@@ -301,7 +304,7 @@ public class DoublyLinkedList(T) {
 	* @param index Position to be inserted at. 
 	* @note Elements after 'index' position will be moved toward the bottom of the list.
 	*/
-	public void insertAt(T element, uint index) {
+	public void insertAt(T element, uint index) nothrow {
 		// If the index is too big. Not sure if need to crash or silently place it last.
 		if(index >= m_nodesCount) {
 			insertLast(element);
@@ -326,7 +329,7 @@ public class DoublyLinkedList(T) {
 	* insertLast Inserts value at the end of list 
 	* @param element Element to insert.
 	*/
-	public void insertLast(T element) {
+	public void insertLast(T element) nothrow {
 		Node* e = m_end;
 
 		Node* n = new Node(element, null, m_end);
@@ -443,7 +446,7 @@ public class DoublyLinkedList(T) {
 	* @param element Element to remove
 	* @param firstOnly (Default=true) If set at false, it will delete all occurence (recursive)
 	*/
-	public void removeItem(T element, bool firstOnly = true) {
+	public void removeItem(T element, bool firstOnly = true) nothrow {
 		Node* n = m_begin;
 		bool isFound = false;
 
@@ -481,7 +484,7 @@ public class DoublyLinkedList(T) {
 	/**
 	* reverse Reverse the list order
 	*/
-	public void reverse() {
+	public void reverse() nothrow {
 		Node* n = m_begin; 
 
 		while(n != null) {
@@ -498,6 +501,65 @@ public class DoublyLinkedList(T) {
 		}
 	}
 
+	private void mergesort() {
+		import std.stdio;
+		m_begin = msort(m_begin, m_nodesCount);  
+		import std.stdio;
+		//return lst;
+	}
+
+	private Node* msort(Node* first, int length) {
+		if(length > 1) {
+			Node* second = first;
+			for(int i=0; i < length / 2; i++) {
+				second = second.next;
+			}
+			first = msort(first, length/2);
+			second = msort(second, (length + 1) / 2);
+						
+			return merge(first, second, length);	
+		} else {
+			return first;
+		}
+	}
+
+	private Node* merge(Node* first, Node* second, int length) {
+		Node* result = first.previous; //remember the beginning of the new list will begin after its merged
+		int right = 0;
+		import std.stdio;
+		
+		for(int i = 0; i < length; i++) {
+			if(first.value <= second.value) {
+				writeln("LETS BREAK");
+				write("((", &first, "))");
+				if(first.next == second) break; //end of first list and all items in the second list are already sorted, thus break
+				writeln("do you even");
+				first = first.next;
+			} else {
+				if(right == (length + 1) / 2) 
+					break; //we have merged all elements of the right list into the first list, thus break
+				
+				writeln("here - else 1");
+				if(second == result) result = result.previous; //special case that we are mergin the last element then the result element moves one step back.
+				Node* nextSecond = second.next;
+				//remove second
+				second.previous.next = second.next;
+				second.next.previous = second.previous;
+				//insert second behind first.prev
+				second.previous = first.previous;
+				first.previous.next = second;
+				//insert second before first
+				second.next = first; 
+				first.previous = second;
+				//move on to the next item in the second list
+				second = nextSecond;
+				right++;
+			}
+		}
+
+		return result.next; //return the beginning of the merged list
+	}
+
 	/**
 	* sort Quicksort (NOT IMPLEMENTED) (TODO)
 	*/
@@ -505,6 +567,9 @@ public class DoublyLinkedList(T) {
 		if(m_nodesCount < 2) {
 			return;
 		}
+
+		mergesort();
+		
 	}
 
 	/**
@@ -512,7 +577,7 @@ public class DoublyLinkedList(T) {
 	* @param n1 First node
 	* @param n2 Second node
 	*/
-	private void swapNodes(Node* n1, Node* n2) {
+	private void swapNodes(Node* n1, Node* n2) nothrow {
 		T ele = n1.value;
 		n1.value = n2.value;
 		n2.value = ele;
@@ -522,7 +587,7 @@ public class DoublyLinkedList(T) {
 	* toArray Creates a copy of the list into an array
 	* @returns List as an array
 	*/
-	public T[] toArray() {
+	public T[] toArray() nothrow {
 		T[] elements = new T[m_nodesCount];
 
 		Node* n = m_begin;
@@ -543,7 +608,7 @@ public class DoublyLinkedList(T) {
 	*                Doesn't actually reverse it.
 	* @returns Reversed list in array format.
 	*/
-	public T[] toReverseArray() {
+	public T[] toReverseArray() nothrow {
 		Node* n = m_end;
 		T[] elements = new T[m_nodesCount];
 
@@ -606,7 +671,7 @@ public class DoublyLinkedList(T) {
 	/**
 	* opDollar Dollar 'operator'. It corresponds to count-1.
 	*/
-	public uint opDollar() {
+	public uint opDollar() pure nothrow {
 		return m_nodesCount-1;
 	}
 }
