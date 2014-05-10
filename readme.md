@@ -13,6 +13,9 @@ every use you do of any scripts.
 Note: dllist still misses sort() method. It will come soon. Some code
 correction will also follow eventually. Additional methods too.
 
+Contributor(s) (aka extraordinary people):
+* Michael Tran (makrattaur) (Implementation of quicksort algorithm on DoublyLinkedList!(T).sort()
+
 Author(s):
 
 * Alexandre "TryHard" Leblanc, <alex.cs00 [at] mail [dot] com>
