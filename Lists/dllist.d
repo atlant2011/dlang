@@ -568,10 +568,85 @@ public class DoublyLinkedList(T) {
 			return;
 		}
 
-		mergesort();
+		qsort();
 		
 	}
+	
+	/**
+	* swapIndexes Swap the nodes at the specified indexes.
+	* @param inx1 First index to swap.
+	* @param inx2 Second index to swap.
+	*/
+	private void swapIndexes(uint inx1, uint inx2) {
+		swapNodes(getNodeAt(inx1), getNodeAt(inx2));
+	}
+	
+	/**
+	* qsortPartition Does one iteration of the partition step of the in-place
+	*                Quicksort algorithm.
+	* @param left The lower bound to partition (inclusive).
+	* @param right The upper bound to partition (inclusive).
+	* @param pivot The index of the pivot to use.
+	* @returns The final postion of the pivot.
+	*/
+	private uint qsortPartition(uint left, uint right, uint pivot) {
+		T pivotValue = getValueAt(pivot);
+		// Place the pivot at the end of the range.
+		swapIndexes(pivot, right);
 
+		// Indicates at which position the values smaller than the pivot will be
+		// swapped with.
+		uint storeIndex = left;
+		for(uint i = left; i < right; i++) {
+			if(getValueAt(i) <= pivotValue) {
+				swapIndexes(i, storeIndex);
+				storeIndex++;
+			}
+		}
+		// Place the pivot where it belongs.
+		swapIndexes(storeIndex, right);
+		
+		return storeIndex;
+	}
+	
+	/**
+	* qsort Implementation of the in-place Quicksort algorithm.
+	* @param left The lower bound of the list to sort.
+	* @param right The upper bound of the list to sort.
+	*/
+	private void qsort(uint left, uint right) {
+		// Nothing to sort.
+		if(left >= right) {
+			return;
+		}
+	
+		// The pivot is the element at the center of the range.
+		uint pivot = left + (right - left + 1) / 2;
+		uint newPivotIndex = qsortPartition(left, right, pivot);
+		
+		// Avoid index overflow and underflow.
+		
+		if(newPivotIndex != left) {
+			qsort(left, newPivotIndex - 1);
+		}
+		
+		if(newPivotIndex != right) {
+			qsort(newPivotIndex + 1, right);
+		}
+	}
+	
+	/**
+	* qsort Implementation of the in-place Quicksort algorithm.
+	*       Overload to sort the whole list.
+	*/
+	private void qsort()
+	{
+		uint left = 0;
+		uint right = m_nodesCount - 1;
+	
+		qsort(left, right);
+	}
+	
 	/**
 	* swapNodes Swap nodes' values
 	* @param n1 First node
