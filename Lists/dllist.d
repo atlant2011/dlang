@@ -1,7 +1,7 @@
 /+
 CLASS:			DoubleLinkedList(T)
 AUTHORS:		Alexandre "TryHard" Leblanc, <alex.cs00@mail.com>, <alex.cs00@yahoo.ca>
-				Michael Tran 
+				Michael Tran (makrattaur)
 DESCRIPTION:	Doubly Linked List!
 # Properties
 o count					:	Number of element in the list
@@ -501,65 +501,6 @@ public class DoublyLinkedList(T) {
 		}
 	}
 
-	private void mergesort() {
-		import std.stdio;
-		m_begin = msort(m_begin, m_nodesCount);  
-		import std.stdio;
-		//return lst;
-	}
-
-	private Node* msort(Node* first, int length) {
-		if(length > 1) {
-			Node* second = first;
-			for(int i=0; i < length / 2; i++) {
-				second = second.next;
-			}
-			first = msort(first, length/2);
-			second = msort(second, (length + 1) / 2);
-						
-			return merge(first, second, length);	
-		} else {
-			return first;
-		}
-	}
-
-	private Node* merge(Node* first, Node* second, int length) {
-		Node* result = first.previous; //remember the beginning of the new list will begin after its merged
-		int right = 0;
-		import std.stdio;
-		
-		for(int i = 0; i < length; i++) {
-			if(first.value <= second.value) {
-				writeln("LETS BREAK");
-				write("((", &first, "))");
-				if(first.next == second) break; //end of first list and all items in the second list are already sorted, thus break
-				writeln("do you even");
-				first = first.next;
-			} else {
-				if(right == (length + 1) / 2) 
-					break; //we have merged all elements of the right list into the first list, thus break
-				
-				writeln("here - else 1");
-				if(second == result) result = result.previous; //special case that we are mergin the last element then the result element moves one step back.
-				Node* nextSecond = second.next;
-				//remove second
-				second.previous.next = second.next;
-				second.next.previous = second.previous;
-				//insert second behind first.prev
-				second.previous = first.previous;
-				first.previous.next = second;
-				//insert second before first
-				second.next = first; 
-				first.previous = second;
-				//move on to the next item in the second list
-				second = nextSecond;
-				right++;
-			}
-		}
-
-		return result.next; //return the beginning of the merged list
-	}
-
 	/**
 	* sort Quicksort (NOT IMPLEMENTED) (TODO)
 	*/
@@ -569,7 +510,6 @@ public class DoublyLinkedList(T) {
 		}
 
 		qsort();
-		
 	}
 	
 	/**
