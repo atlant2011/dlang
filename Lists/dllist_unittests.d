@@ -224,7 +224,82 @@ unittest {
 			"Properties: count=", list.count, " max=", list.max,
 			" min=", list.min, " empty=", list.empty);
 	readln();
+	
+	list.clear();
+	list.insertLast(50);
+	list.insertLast(23);
+	list.insertLast(78);
+	list.insertLast(20);
+	list.insertLast(8);
+	list.insertLast(9);
+	list.insertLast(32);
+	list.insertLast(12);
+	
+	list.sort();
+	// List should be 8 9 12 20 23 32 50 78
+	assert(list[0] == 8);
+	assert(list[1] == 9);
+	assert(list[2] == 12);
+	assert(list[3] == 20);
+	assert(list[4] == 23);
+	assert(list[5] == 32);
+	assert(list[6] == 50);
+	assert(list[7] == 78);
+	assert(list[8] == 9);
+	assert(list[9] == 12);
+	assert(list[10] == 20);
+	assert(list[11] == 23);
+	assert(list[12] == 32);
+	assert(list[13] == 50);
+	assert(list[14] == 78);
 
+	writeln("STEP 16 : sort\n", 
+			"----------------------------\n",
+			"Expected result: [8, 9, 12, 20, 23, 32, 50, 78]\n",
+			"Obtained result: ", list.toArray());
+	readln();
+	
+	list.clear();
+	list.insertLast(12);
+	list.insertLast(20);
+	list.insertLast(10);
+	list.insertLast(25);
+	list.insertLast(30);
+
+	list.sort();
+	// List should be 10 12 20 25 30
+	assert(list[0] == 10);
+	assert(list[1] == 12);
+	assert(list[2] == 20);
+	assert(list[3] == 25);
+	assert(list[4] == 30);
+
+	writeln("STEP 17 : sort (final pivot position at the beginning)\n", 
+			"----------------------------\n",
+			"Expected result: [10, 12, 20, 25, 30]\n",
+			"Obtained result: ", list.toArray());
+	readln();
+	
+	list.clear();
+	list.insertLast(12);
+	list.insertLast(20);
+	list.insertLast(30);
+	list.insertLast(25);
+	list.insertLast(10);
+
+	list.sort();
+	// List should be 10 12 20 25 30
+	assert(list[0] == 10);
+	assert(list[1] == 12);
+	assert(list[2] == 20);
+	assert(list[3] == 25);
+	assert(list[4] == 30);
+
+	writeln("STEP 18 : sort (final pivot position at the end)\n", 
+			"----------------------------\n",
+			"Expected result: [10, 12, 20, 25, 30]\n",
+			"Obtained result: ", list.toArray());
+	readln();
 }
 
 int main()
