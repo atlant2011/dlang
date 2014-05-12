@@ -52,12 +52,12 @@ module dllist;
 import std.string : format;
 import core.memory;
 
-public class DoublyLinkedList(T) {
+public final class DoublyLinkedList(T) {
 
 	/**
 	* Node Structure representing a Node in the list.
 	*/
-	private struct Node {
+	private final struct Node {
 		T value;			// Stored value
 		Node* next;		    // Pointer to the next node
 		Node* previous;		// Pointer to previous node
@@ -83,7 +83,7 @@ public class DoublyLinkedList(T) {
 	* @property count   
 	* @returns Real quantity of elements in the list (not the length)
 	*/
-	public uint count() const pure @property {
+	public uint count() const pure nothrow @property {
 		return m_nodesCount;
 	}
 
@@ -91,7 +91,7 @@ public class DoublyLinkedList(T) {
 	* @property empty
 	* @returns True if list is empty. False otherwise.
 	*/
-	public bool empty() const pure @property {
+	public bool empty() const pure nothrow @property {
 		return (m_nodesCount == 0);
 	}
 
@@ -99,7 +99,7 @@ public class DoublyLinkedList(T) {
 	* @property max
 	* @returns Maximum value in list
 	*/
-	public T max() @property {
+	public T max() pure nothrow @property {
 		return getMaxValue();
 	}
 
@@ -107,7 +107,7 @@ public class DoublyLinkedList(T) {
 	* @property min
 	* @returns Minimum value in list
 	*/
-	public T min() @property {
+	public T min() pure nothrow @property {
 		return getMinValue();
 	}
 
@@ -116,7 +116,7 @@ public class DoublyLinkedList(T) {
 	 * @param list List to append at the end of the current list.
 	 * @note Use "~=" operator (this ~= otherList)
 	 */
-	public void appendList(DoublyLinkedList!(T) list) {
+	public void appendList(DoublyLinkedList!(T) list) pure @safe {
 		if(list.count == 0) {
 			return;
 		}
@@ -129,7 +129,7 @@ public class DoublyLinkedList(T) {
 	/**
 	* clear Clears the list from all items (calls GC.collect(), too)
 	*/
-	public void clear() {
+	public void clear() @trusted {
 		Node* n = m_begin;
 
 		while(n != null) {
@@ -149,7 +149,7 @@ public class DoublyLinkedList(T) {
 	* @param value Element to search
 	* @returns True if found, false otherwise
 	*/
-	public bool contains(T value) nothrow {
+	public bool contains(T value) pure nothrow @safe {
 		Node* n = m_begin;
 
 		while(n != null) {
@@ -168,7 +168,7 @@ public class DoublyLinkedList(T) {
 	* @param element Element to count
 	* @returns : Number of element's occurences in the list.
 	*/
-	public uint countItem(T element) nothrow {
+	public uint countItem(T element) pure nothrow @safe {
 		Node* n = m_begin;
 		uint count = 0;
 
@@ -187,7 +187,7 @@ public class DoublyLinkedList(T) {
 	* getMaxValue Gets the max value in list
 	* @returns : Maximum value in the list
 	*/
-	public T getMaxValue() {
+	public T getMaxValue() pure @safe {
 		if(m_nodesCount == 0) {
 			return T.init;
 		}
@@ -212,7 +212,7 @@ public class DoublyLinkedList(T) {
 	* getMinValue Gets the minimum value in the list
 	* @returns Minimum value in the list
 	*/
-	public T getMinValue() {
+	public T getMinValue() pure @safe {
 		if(m_nodesCount == 0) {
 			return T.init;
 		}
@@ -238,7 +238,7 @@ public class DoublyLinkedList(T) {
 	* @param index Node's position in list
 	* @returns A Pointer on the node. (Node*)
 	*/
-	private Node* getNodeAt(uint index) {
+	private Node* getNodeAt(uint index) pure nothrow @safe {
 		Node* n = m_begin;
 
 		for(uint i = 0; i < index && n != null; ++i) {
@@ -254,7 +254,7 @@ public class DoublyLinkedList(T) {
 	* @returns Element of type T
 	* @exception Throws an exception if out of range.
 	*/
-	public T getValueAt(uint index) {
+	public T getValueAt(uint index) pure @safe {
 		if(index >= m_nodesCount) {
 			throw new Exception(format("Index out-of-range error. Index: %s, Count: %s (getValueAt())", index, m_nodesCount));
 		}
@@ -277,7 +277,7 @@ public class DoublyLinkedList(T) {
 	* insert Inserts an element on top of the list (becomes first)
 	* @param value Value to insert in the list
 	*/
-	public void insert(T value) nothrow {
+	public void insert(T value) pure nothrow @safe {
 		// Copy the pointer of the will-be-second-in-list element
 		Node* d = m_begin;
 
@@ -304,7 +304,7 @@ public class DoublyLinkedList(T) {
 	* @param index Position to be inserted at. 
 	* @note Elements after 'index' position will be moved toward the bottom of the list.
 	*/
-	public void insertAt(T element, uint index) nothrow {
+	public void insertAt(T element, uint index) pure nothrow @safe {
 		// If the index is too big. Not sure if need to crash or silently place it last.
 		if(index >= m_nodesCount) {
 			insertLast(element);
@@ -329,7 +329,7 @@ public class DoublyLinkedList(T) {
 	* insertLast Inserts value at the end of list 
 	* @param element Element to insert.
 	*/
-	public void insertLast(T element) nothrow {
+	public void insertLast(T element) pure nothrow @safe {
 		Node* e = m_end;
 
 		Node* n = new Node(element, null, m_end);
@@ -395,7 +395,7 @@ public class DoublyLinkedList(T) {
 	 * prependList Prepend list at the beginning. Keeps the same order.
 	 * @param list List to prepend to the current list.
 	 */
-	public void prependList(DoublyLinkedList!(T) list) {
+	public void prependList(DoublyLinkedList!(T) list) pure @safe {
 		if(list.count == 0) {
 			return;
 		}
@@ -410,7 +410,7 @@ public class DoublyLinkedList(T) {
 	* @param index Index of the element to remove
 	* @exception Throws an exception if index is out of range
 	*/
-	public void removeAt(uint index) {
+	public void removeAt(uint index) pure @safe {
 		if(index >= m_nodesCount) {
 			throw new Exception(format("Index out-of-range error. Index: %s, Count: %s (removeAt())", index, m_nodesCount));
 		}
@@ -446,7 +446,7 @@ public class DoublyLinkedList(T) {
 	* @param element Element to remove
 	* @param firstOnly (Default=true) If set at false, it will delete all occurence (recursive)
 	*/
-	public void removeItem(T element, bool firstOnly = true) nothrow {
+	public void removeItem(T element, bool firstOnly = true) pure nothrow @safe {
 		Node* n = m_begin;
 		bool isFound = false;
 
@@ -484,7 +484,7 @@ public class DoublyLinkedList(T) {
 	/**
 	* reverse Reverse the list order
 	*/
-	public void reverse() nothrow {
+	public void reverse() pure nothrow @safe {
 		Node* n = m_begin; 
 
 		while(n != null) {
@@ -504,7 +504,7 @@ public class DoublyLinkedList(T) {
 	/**
 	* sort Quicksort (NOT IMPLEMENTED) (TODO)
 	*/
-	public void sort() {
+	public void sort() pure @safe {
 		if(m_nodesCount < 2) {
 			return;
 		}
@@ -517,7 +517,7 @@ public class DoublyLinkedList(T) {
 	* @param inx1 First index to swap.
 	* @param inx2 Second index to swap.
 	*/
-	private void swapIndexes(uint inx1, uint inx2) {
+	private void swapIndexes(uint inx1, uint inx2) pure @safe {
 		swapNodes(getNodeAt(inx1), getNodeAt(inx2));
 	}
 	
@@ -529,7 +529,7 @@ public class DoublyLinkedList(T) {
 	* @param pivot The index of the pivot to use.
 	* @returns The final postion of the pivot.
 	*/
-	private uint qsortPartition(uint left, uint right, uint pivot) {
+	private uint qsortPartition(uint left, uint right, uint pivot) pure @safe {
 		T pivotValue = getValueAt(pivot);
 		// Place the pivot at the end of the range.
 		swapIndexes(pivot, right);
@@ -554,7 +554,7 @@ public class DoublyLinkedList(T) {
 	* @param left The lower bound of the list to sort.
 	* @param right The upper bound of the list to sort.
 	*/
-	private void qsort(uint left, uint right) {
+	private void qsort(uint left, uint right) pure @safe {
 		// Nothing to sort.
 		if(left >= right) {
 			return;
@@ -579,8 +579,7 @@ public class DoublyLinkedList(T) {
 	* qsort Implementation of the in-place Quicksort algorithm.
 	*       Overload to sort the whole list.
 	*/
-	private void qsort()
-	{
+	private void qsort() pure @safe {
 		uint left = 0;
 		uint right = m_nodesCount - 1;
 	
@@ -602,7 +601,7 @@ public class DoublyLinkedList(T) {
 	* toArray Creates a copy of the list into an array
 	* @returns List as an array
 	*/
-	public T[] toArray() nothrow {
+	public T[] toArray() pure nothrow {
 		T[] elements = new T[m_nodesCount];
 
 		Node* n = m_begin;
@@ -623,7 +622,7 @@ public class DoublyLinkedList(T) {
 	*                Doesn't actually reverse it.
 	* @returns Reversed list in array format.
 	*/
-	public T[] toReverseArray() nothrow {
+	public T[] toReverseArray() pure nothrow {
 		Node* n = m_end;
 		T[] elements = new T[m_nodesCount];
 
@@ -661,7 +660,7 @@ public class DoublyLinkedList(T) {
 	* @param Element's position in list
 	* @returns T element
 	*/
-	public T opIndex(uint index) {
+	public T opIndex(uint index) pure {
 		return getValueAt(index);
 	}
 
@@ -669,7 +668,7 @@ public class DoublyLinkedList(T) {
 	 * opOpAssign "~" Concatenation assignement operator
 	 * @param list Same type list.
 	 */
-	public void opOpAssign(string op : "~")(DoublyLinkedList!(T) list) {
+	public void opOpAssign(string op : "~")(DoublyLinkedList!(T) list) pure {
 		appendList(list);
 	}
 
@@ -679,7 +678,7 @@ public class DoublyLinkedList(T) {
 	* @param y Ending position
 	* @returns Array representing the slice
 	*/
-	public T[] opSlice(uint x, uint y) {
+	public T[] opSlice(uint x, uint y) pure {
 		return toArray()[x..y];
 	}
 
