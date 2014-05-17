@@ -1,4 +1,4 @@
-﻿/+
+/+
 	FILE:			StringManip
 	AUTHOR:			Alexandre "TryHard" Leblanc, <alex.cs00@mail.com>, <alex.cs00@yahoo.ca>
 	DESCRIPTION:	Class used to play more with strings. 
@@ -28,6 +28,7 @@
 	VERSION_HISTORY:	[1.5]		Transformed functions into templated functions (Added support for all strings)
 									Applied @safe attribute
 									Tested under 2.065+ DMD
+									CaseSensivity doesn't work.
 						
 						[1.1]		Added case sensivity selection.
 									Applied pure functions.
