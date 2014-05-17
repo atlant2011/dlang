@@ -55,8 +55,10 @@ enum CaseSensitive { no, yes }
 */
 T getBetween(T = string)(immutable T first, immutable T last, immutable T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes) 
 pure @trusted {
-	immutable auto fPos = std.string.indexOf(inthat, first, isCaseSensitive);
-	immutable auto lPos = std.string.indexOf(getAfter!(T)(first, inthat, isCaseSensitive), last, isCaseSensitive);
+	//immutable auto fPos = std.string.indexOf(inthat, first, isCaseSensitive);
+	immutable auto fPos = std.string.indexOf(inthat, first);
+	//immutable auto lPos = std.string.indexOf(getAfter!(T)(first, inthat, isCaseSensitive), last, isCaseSensitive);
+	immutable auto lPos = std.string.indexOf(getAfter!(T)(first, inthat), last);
 	
 	if(fPos < 0 || lPos < 0) {
 		return T.init;
@@ -77,8 +79,10 @@ pure @trusted {
 T getBetweenLast(T = string)(immutable T first, immutable T last, immutable T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// Get the last position of wfirst and wlast.
-	immutable auto lPos = std.string.lastIndexOf(inthat, last, isCaseSensitive);
-	immutable auto fPos = std.string.lastIndexOf(getBeforeLast!(T)(last, inthat, isCaseSensitive), first, isCaseSensitive);
+	//immutable auto lPos = std.string.lastIndexOf(inthat, last, isCaseSensitive);
+	immutable auto lPos = std.string.lastIndexOf(inthat, last);
+	//immutable auto fPos = std.string.lastIndexOf(getBeforeLast!(T)(last, inthat, isCaseSensitive), first, isCaseSensitive);
+	immutable auto fPos = std.string.lastIndexOf(getBeforeLast!(T)(last, inthat), first);
 
 	// If we do not find a matching result, return an empty string.
 	if(fPos < 0 || lPos < 0) {
@@ -106,23 +110,39 @@ pure @trusted {
 	
 	// While we've not reached the n-th occurence, and that we can still find the occurence, increment index, and get
 	// what is after.
+	/*
 	while(i < (n-1) && (std.string.indexOf(inthat, first, isCaseSensitive) >= 0 
 	      && std.string.indexOf(getAfter!(T)(first, inthat, isCaseSensitive), last, isCaseSensitive) >= 0)) {
 		inthat = getAfter!(T)(first, getAfter!(T)(last, inthat, isCaseSensitive), isCaseSensitive);
 		i++;
 	}
-
+	*/
+	
+	while(i < (n-1) && (std.string.indexOf(inthat, first) >= 0 
+	      && std.string.indexOf(getAfter!(T)(first, inthat, isCaseSensitive), last) >= 0)) {
+		inthat = getAfter!(T)(first, getAfter!(T)(last, inthat, isCaseSensitive), isCaseSensitive);
+		i++;
+	}
+	
 	// If we don't find n-th occurence, just send an empty string.
+	/*
 	if(std.string.indexOf(inthat, first, isCaseSensitive) < 0 
 	   || std.string.indexOf(getAfter!(T)(first, inthat, isCaseSensitive), last, isCaseSensitive) < 0 
+	   || i+1 != n) {
+		return T.init;
+	}*/
+	if(std.string.indexOf(inthat, first) < 0 
+	   || std.string.indexOf(getAfter!(T)(first, inthat, isCaseSensitive), last) < 0 
 	   || i+1 != n) {
 		return T.init;
 	}
 
 	// Get the position of the n-th occurence.
-	immutable auto fPos = std.string.indexOf(inthat, first, isCaseSensitive);
-	immutable auto lPos = std.string.indexOf(getAfter!(T)(first, inthat, isCaseSensitive), last, isCaseSensitive);
-
+	//immutable auto fPos = std.string.indexOf(inthat, first, isCaseSensitive);
+	//immutable auto lPos = std.string.indexOf(getAfter!(T)(first, inthat, isCaseSensitive), last, isCaseSensitive);
+	immutable auto fPos = std.string.indexOf(inthat, first);
+    immutable auto lPos = std.string.indexOf(getAfter!(T)(first, inthat, isCaseSensitive), last);
+	
 	// Return the resulting string.
 	return inthat[(fPos + first.length)..(fPos + first.length + lPos)];
 }
@@ -142,7 +162,8 @@ pure @trusted {
 	T[] list;
 
 	// If there is no match of at least one of the identifiers, return an empty array
-	if(std.string.indexOf(inthat, wthis, isCaseSensitive) < 0 || 0 > std.string.indexOf(inthat, that, isCaseSensitive)) {
+	//if(std.string.indexOf(inthat, wthis, isCaseSensitive) < 0 || 0 > std.string.indexOf(inthat, that, isCaseSensitive)) {
+	if(std.string.indexOf(inthat, wthis) < 0 || 0 > std.string.indexOf(inthat, that))
 		// Add at least one empty string then return it.
 		list ~= T.init;
 		return list;
@@ -154,8 +175,10 @@ pure @trusted {
 	T original = inthat.dup;
 
 	// While we can find both identifiers
-	while(std.string.indexOf(original, wthis, isCaseSensitive) >= 0 
-	      && std.string.indexOf(original, wthat, isCaseSensitive) >= 0) {
+	//while(std.string.indexOf(original, wthis, isCaseSensitive) >= 0 
+	//      && std.string.indexOf(original, wthat, isCaseSensitive) >= 0) {
+	while(std.string.indexOf(original, wthis) >= 0 
+	      && std.string.indexOf(original, wthat) >= 0) {
 		// Get what is between the first identifiers.	
 		list ~= getBetween!(T)(wthis, wthat, original, isCaseSensitive);
 
@@ -182,7 +205,8 @@ pure @trusted {
 T getAfter(T = string)(immutable T wthis, immutable T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// Ocurrence's position
-	immutable auto pos = std.string.indexOf(inthat, wthis, isCaseSensitive);
+	//immutable auto pos = std.string.indexOf(inthat, wthis, isCaseSensitive);
+	immutable auto pos = std.string.indexOf(inthat, wthis);
 
 	// If occurence is not found in string, return an empty string.
 	if(pos < 0) {
@@ -204,7 +228,7 @@ pure @trusted {
 T getAfterLast(T = string)(immutable T wthis, immutable T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// Position of the latest occurence "wthis"
-	immutable auto pos = std.string.lastIndexOf(inthat, wthis, isCaseSensitive);
+	immutable auto pos = std.string.lastIndexOf(inthat, wthis);
 
 	// If not found, return empty string
 	if(pos < 0) {
@@ -226,7 +250,7 @@ pure @trusted {
 T getBefore(T = string)(immutable T wthis, immutable T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// Get position of the occurence
-	immutable auto pos = std.string.indexOf(inthat, wthis, isCaseSensitive);
+	immutable auto pos = std.string.indexOf(inthat, wthis);
 
 	// If not found, return an empty string.
 	if(pos < 0) {
@@ -248,7 +272,7 @@ pure @trusted {
 T getBeforeLast(T = string)(immutable T wthis, immutable T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// Ge the last position of occurence
-	immutable auto pos = std.string.lastIndexOf(inthat, wthis, isCaseSensitive);
+	immutable auto pos = std.string.lastIndexOf(inthat, wthis);
 
 	// If not found, return an empty string
 	if(pos < 0) {
@@ -271,7 +295,7 @@ pure @trusted {
 T replaceFirstCopy(T = string)(immutable T wthis, immutable T bythat, immutable T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// If occurence is not found, just return the original string.
-	if(std.string.indexOf(inthat, wthis, isCaseSensitive) < 0) {
+	if(std.string.indexOf(inthat, wthis) < 0) {
 		return inthat;
 	}
 
@@ -294,7 +318,7 @@ pure @trusted {
 bool replaceFirst(T = string)(immutable T wthis, immutable T bythat, ref T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// If occurence is not found, just return false
-	if(std.string.indexOf(inthat, wthis, isCaseSensitive) < 0) {
+	if(std.string.indexOf(inthat, wthis) < 0) {
 		return false;
 	}
 
@@ -317,7 +341,7 @@ pure @trusted {
 T replaceLastCopy(T = string)(immutable T wthis, immutable T bythat, immutable T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// If occurence is not found, return original string.
-	if(std.string.indexOf(inthat, wthis, isCaseSensitive) < 0) {
+	if(std.string.indexOf(inthat, wthis) < 0) {
 		return inthat;
 	}
 
@@ -340,7 +364,7 @@ pure @trusted {
 bool replaceLast(T = string)(immutable T wthis, immutable T bythat, ref T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// If occurence is not found, return false.
-	if(std.string.indexOf(inthat, wthis, isCaseSensitive) < 0) {
+	if(std.string.indexOf(inthat, wthis) < 0) {
 		return false;
 	}
 
@@ -364,7 +388,7 @@ pure @trusted {
 T replaceNCopy(T = string)(immutable T wthis, immutable T bythat, immutable byte n, T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// Before continuing, abort if occurence not even found.
-	if(std.string.indexOf(inthat, wthis, isCaseSensitive) < 0) {
+	if(std.string.indexOf(inthat, wthis) < 0) {
 		return inthat;
 	}
 
@@ -376,7 +400,7 @@ pure @trusted {
 
 	// While we found occurence and we've haven't reached the number of occurence...
 	// Increment and ge the after part.
-	while(i < n-1 && std.string.indexOf(after, wthis, isCaseSensitive) >= 0) {
+	while(i < n-1 && std.string.indexOf(after, wthis) >= 0) {
 		after = getAfter!(T)(wthis, after, isCaseSensitive);
 		i++;
 	}
@@ -408,7 +432,7 @@ pure @trusted {
 T replaceAllCopy(T = string)(immutable T wthis, immutable T bythat, immutable T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// If occurence is not found, return false.
-	if(std.string.indexOf(inthat, wthis, isCaseSensitive) < 0) {
+	if(std.string.indexOf(inthat, wthis) < 0) {
 		return inthat;
 	}
 
@@ -434,7 +458,7 @@ pure @trusted {
 bool replaceAll(T = string)(immutable T wthis, immutable T bythat, ref T inthat, CaseSensitive isCaseSensitive = CaseSensitive.yes)
 pure @trusted {
 	// If occurence is not found, return false.
-	if(std.string.indexOf(inthat, wthis, isCaseSensitive) < 0) {
+	if(std.string.indexOf(inthat, wthis) < 0) {
 		return false;
 	}
 
