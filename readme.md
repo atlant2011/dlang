@@ -7,11 +7,7 @@ A mention of the contributors is however welcomed in
 every use you do of any scripts.
 
 * StringManip: Useful methods used to manipulate strings.
-* Lists/dllist: Templated DoublyLinkedList*
-
-
-Note: dllist still misses sort() method. It will come soon. Some code
-correction will also follow eventually. Additional methods too.
+* Lists/dllist: Templated DoublyLinkedList
 
 Contributor(s) (aka extraordinary people):
 * Michael Tran (makrattaur) (Implementation of quicksort algorithm on DoublyLinkedList!(T).sort()
