@@ -592,9 +592,32 @@ public final class DoublyLinkedList(T) {
 	* @param n2 Second node
 	*/
 	private void swapNodes(Node* n1, Node* n2) nothrow {
-		T ele = n1.value;
-		n1.value = n2.value;
-		n2.value = ele;
+		if(n1 == n2) {
+			return;
+		}
+				
+		//T ele = n1.value;
+		//n1.value = n2.value;
+		//n2.value = ele;
+		
+		if(n1.previous != null) { n1.previous.next = n2; }
+		if(n2.previous != null) { n2.previous.next = n1; }
+		if(n1.next != null) { n1.next.previous = n2; }
+		if(n2.next != null) { n2.next.previous = n1; }
+		
+		Node* temp;
+		
+		temp = n1.previous;
+		n1.previous = n2.previous;    
+		n2.previous = temp;
+		temp = n1.next;
+		n1.next = n2.next;    
+		n2.next = temp;
+		
+		if(m_begin == n1) { m_begin = n2; }
+		else if(m_begin == n2) { m_begin = n1; }
+		if(m_end == n2) { m_end = n1; }
+		else if(m_end == n1) { m_end = n2; }
 	}
 
 	/**
