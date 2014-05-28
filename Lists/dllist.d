@@ -258,15 +258,26 @@ public final class DoublyLinkedList(T) {
 		if(index >= m_nodesCount) {
 			throw new Exception(format("Index out-of-range error. Index: %s, Count: %s (getValueAt())", index, m_nodesCount));
 		}
-
-		uint count = 0;
-		Node* n = m_begin;
-
-		while(count < index) {
-			n = n.next;
-			count++;
+		
+		Node* n;
+		if(index > m_nodesCount / 2) {
+			uint count = 0;
+			n = m_begin;
+	
+			while(count < index) {
+				n = n.next;
+				count++;
+			}
+		} else {
+			uint count = m_nodesCount-1;
+			n = m_end;
+	
+			while(count > index) {
+				n = n.previous;
+				count--;
+			}		
 		}
-
+		
 		if(n == null)
 			throw new Exception(format("Index out-of-range error. Index: %s, Count: %s (getValueAt())", index, m_nodesCount));
 
