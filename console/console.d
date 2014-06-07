@@ -28,9 +28,11 @@ import std.string;
 import std.utf;
 import std.conv;
 import std.uni;
+import core.stdc.stdarg;
 
 version(Windows) {
 	public import core.sys.windows.windows;
+
 	extern(Windows) {
 		BOOL Beep(DWORD dwFreq, DWORD dwDuration);
 		BOOL SetConsoleTitleW(LPCWSTR lpConsoleTitle);
@@ -39,7 +41,9 @@ version(Windows) {
 		HWND GetConsoleWindow();
 		DWORD GetLastError();
 		HANDLE GetStdHandle(DWORD nStdHandle);
-
+		BOOL GetConsoleScreenBufferInfo(HANDLE hConsoleOutput, PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
+		DWORD FormatMessageW(DWORD dwFlags, LPCVOID lpSource,  DWORD dwMessageId, DWORD dwLanguageId, LPTSTR lpBuffer,
+							DWORD nSize, va_list *Arguments);
 	}
 }
 
@@ -77,7 +81,7 @@ public enum ConsoleEncoding  {
 */
 public void beep() @system {
 	version(Windows) {
-	Beep(3100, 250);
+		Beep(3100, 250);
 	}
 }
 
@@ -94,11 +98,21 @@ public void beep(int freq, int duration) @system {
 	}
 }
 
-void clear() {
+public void clear() {
 }
 
 string getError() {
-	return "";
+	version(Windows) {
+		string strErrMessage = "";
+		PTSTR lpErrorText = null;
+
+		FormatMessageW(cast(uint)(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER), 
+					   null, GetLastError(), cast(uint)0, lpErrorText, MAX_PATH, null);
+
+		strErrMessage = to!string(lpErrorText);
+	}
+
+	return strErrMessage;
 }
 
 ConsoleEncoding getInputEncoding() {
@@ -203,7 +217,7 @@ void setCursorTop(int rowPos) {
 void setCursorVisisble(bool visible) {
 }
 
-void setForegroundColor(ConsoleColor color) {
+void setForegroundColor(ConsoleColor color) @system {
 	version(Windows) {
 		// http://www.daniweb.com/software-development/cpp/code/216345/add-a-little-color-to-your-console-text
 		SetConsoleTextAttribute(GetStdHandle(-11), cast(WORD)color); 
