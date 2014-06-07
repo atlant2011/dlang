@@ -136,17 +136,17 @@ ConsoleEncoding getOutputEncoding() {
 * returns UTF8 String.
 */
 public string getTitle() @system {
+	wstring title = "";
+
 	version(Windows) {
 		wchar buf[255];
 		GetConsoleTitleW(buf.ptr, cast(DWORD)255);
-	}
 
-	// Convert the title in proper string.
-	wstring title = "";
-	
-	for(int i = 0; i < 255; ++i) {
-		if(isAlpha(buf[i]) || isWhite(buf[i]))
-		   title ~= buf[i];
+		// Convert title.
+		for(int i = 0; i < 255; ++i) {
+			if(isAlpha(buf[i]) || isWhite(buf[i]))
+				title ~= buf[i];
+		}
 	}
 
 	return to!string(title);
@@ -219,7 +219,6 @@ void setCursorVisisble(bool visible) {
 
 void setForegroundColor(ConsoleColor color) @system {
 	version(Windows) {
-		// http://www.daniweb.com/software-development/cpp/code/216345/add-a-little-color-to-your-console-text
 		SetConsoleTextAttribute(GetStdHandle(-11), cast(WORD)color); 
 	}
 }

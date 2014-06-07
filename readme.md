@@ -8,6 +8,7 @@ every use you do of any scripts. All the following modules works with DMD2.065+
 (have not been tested with previous versions) and are fully functionnal. They can 
 be used in heavy use and should not cause any problems.
 
+* Console: Useful functions to work with in the console[1]
 * StringManip: Useful methods used to manipulate strings.
 * Lists/dllist: Templated DoublyLinkedList
 
@@ -16,4 +17,7 @@ Contributor(s) (aka extraordinary people):
 
 Author(s):
 
-* Alexandre "TryHard" Leblanc, <alex.cs00 [at] mail [dot] com>
+* Alexandre "TryHard" Leblanc, <alex.cs00 [at] mail [dot] com>, <www.mrtryhard.info>
+
+Notes:
+[1] Only Windows is supported for the moment
