@@ -48,6 +48,8 @@ version(Windows) {
 									    COORD dwWriteCoord, LPDWORD lpNumberOfCharsWritten);
 		BOOL FillConsoleOutputAttribute(HANDLE hConsole, WORD wAttribute, DWORD nLength, COORD dwWriteCoord, 
 										LPDWORD lpNumberOfAttrsWritten);
+		BOOL FlushConsoleInputBuffer(HANDLE hConsoleInput);
+		UINT GetConsoleOutputCP();
 	}
 }
 
@@ -75,9 +77,160 @@ public enum ConsoleColor {
 	White		=	0x0002 | 0x0004 | 0x0001 | 0x0008,
 }
 
-public enum ConsoleEncoding  {
-	ASCII, 
-	UTF8
+// http://msdn.microsoft.com/en-us/library/dd317756(v=vs.85).aspx
+public enum ConsoleEncoding : uint  {
+	IBM_037 = 37,
+	IBM_437 = 437,
+	IBM_500 = 500,
+	ASMO_708 = 708,
+	ASMO_449 = 709, // ASMO449+ , BCONV4
+	ARABTRANS = 710, // Transparent arabic
+	DOS_720 = 720,
+	IBM_737 = 737,
+	IBM_775 = 775,
+	IBM_850 = 850, // Default Win7 Pro codepage / encoding
+	IBM_852 = 852,
+	IBM_855 = 855,
+	IBM_857 = 857,
+	IBM_00858 = 858,
+	IBM_860 = 860,
+	IBM_861 = 861,
+	DOS_862 = 862,
+	IBM_863 = 863,
+	IBM_864 = 864,
+	IBM_865 = 865,
+	CP_866 = 866,
+	IBM_869 = 869,
+	IBM_870 = 870,
+	WINDOWS_874 = 874,
+	CP_875 = 875,
+	SHIFT_JIS = 932,
+	GB_2312 = 936,
+	KS_C_5601_1987 = 949,
+	BIG5 = 950,
+	IBM_1026 = 1026,
+	IBM_01047 = 1047,
+	IBM_01140 = 1140,
+	IBM_01141 = 1141,
+	IBM_01142 = 1142,
+	IBM_01143 = 1143,
+	IBM_01144 = 1144, 
+	IBM_01145 = 1145,
+	IBM_01146 = 1146,
+	IBM_01147 = 1147,
+	IBM_01148 = 1148,
+	IBM_01149 = 1149,
+	UTF_16 = 1200,
+	UNICODE_FFFE = 1201,
+	WINDOWS_1250 = 1250,
+	WINDOWS_1251 = 1251,
+	WINDOWS_1252 = 1252,
+	WINDOWS_1253 = 1253,
+	WINDOWS_1254 = 1254,
+	WINDOWS_1255 = 1255,
+	WINDOWS_1256 = 1256,
+	WINDOWS_1257 = 1257,
+	WINDOWS_1258 = 1258,
+	JOHAB = 1361,
+	MACINTOSH = 10000,
+	X_MAC_JAPANESE = 10001,
+	X_MAC_CHINESE_TRAD = 10002,
+	X_MAC_KOREAN = 10003,
+	X_MAC_ARABIC = 10004,
+	X_MAC_HEBREW = 10005,
+	X_MAC_GREEK = 10006,
+	X_MAC_CYRILLIC = 10007,
+	X_MAC_CHINESE_SIMP = 10008,
+	X_MAC_ROMANIAN = 10010,
+	X_MAC_UKRANIAN = 10017,
+	X_MAC_THAI = 10021,
+	X_MAC_CE = 10029,
+	X_MAC_ICELANDIC = 10079,
+	X_MAC_TURKISH = 10081,
+	X_MAC_CROATIAN = 10082,
+	UTF_32 = 12000,
+	UTF_32BE = 12001,
+	X_CHINESE_CNS = 20000,
+	X_CP_20001 = 20001,
+	X_CHINESE_ETEN = 20002,
+	X_CP_20003 = 20003,
+	X_CP_20004 = 20004,
+	X_CP_20005 = 20005,
+	X_IA5 = 20105,
+	X_IA5_GERMAN = 20106,
+	X_IA5_SWEDISH = 20107,
+	X_IA5_NORWEGIAN = 20108,
+	US_ASCII = 20127,
+	X_CP_20261 = 20261,
+	X_CP_20269 = 20269,
+	IBM_273 = 20273,
+	IBM_277 = 20277,
+	IBM_278 = 20278,
+	IBM_280 = 20280,
+	IBM_284 = 20284,
+	IBM_285 = 20285,
+	IBM_290 = 20290,
+	IBM_297 = 20297,
+	IBM_420 = 20420,
+	IBM_423 = 20423,
+	IBM_424 = 20424,
+	X_EBCDIC_KOREAN_EXTENDED = 20833,
+	IBM_THAI = 20838,
+	KOI8_R = 20866,
+	IBM_871 = 20871,
+	IBM_880 = 20880,
+	IBM_905 = 20905,
+	IBM00924 = 20924,
+	EUC_JP_JIS = 20932,
+	X_CP_20949 = 20949,
+	CP_1025 = 21025,
+	KOI8_U = 21866,
+	ISO_8859_1 = 28591,
+	ISO_8859_2 = 28502,
+	ISO_8859_3 = 28593,
+	ISO_8859_4 = 28594,
+	ISO_8859_5 = 28595,
+	ISO_8859_6 = 28596,
+	ISO_8859_7 = 28597,
+	ISO_8859_8 = 28598,
+	ISO_8859_9 = 28599,
+	ISO_8859_13 = 28603,
+	ISO_8859_15 = 28605,
+	X_EUROPA = 29001,
+	ISO_8859_8I = 38598, 
+	ISO_2022_JP = 50220,
+	CS_ISO_2022_JP = 50221,
+	ISO_2022_JIS = 50222,	// ISO 2022 Japanese JIS X 0201-1989; Japanese (JIS-Allow 1 byte Kana - SO/SI)
+	ISO_2022_KR = 50225,
+	X_CP_50227 = 50227,
+	ISO_2022_CH_TRAD = 50229,
+	EBCDIC_JP_KATA_EXT = 50903, // EBCDIC Japanese (Katakana) Extended
+	EBCDIC_CA_US_JP = 50931,
+	EBCDIC_KR_EXT_KR = 50933,
+	EBCDIC_CN_SIMP_AND_EXT = 50935,	   // EBCDIC Chinese Simplified Extended and Simplified
+	EBCDIC_CHINESE = 50936,
+	EBCDIC_US_CA_CH_TRAD = 50937,
+	EBCDIC_JP_LATIN_AND_EXT = 50939,
+	EUC_JP = 51932,
+	EUC_CN = 51936,
+	EUC_KR = 51949,
+	EUC_CN_TRAD = 51950,
+	HZ_GB_2312 = 52936,
+	GB_18030 = 54936,
+	X_ISCII_DE = 57002,
+	X_ISCII_BE = 57003,
+	X_ISCII_TA = 57004,
+	X_ISCII_TE = 57005,
+	X_ISCII_AS = 57006,
+	X_ISCII_OR = 57007,
+	X_ISCII_KA = 57008,
+	X_ISCII_MA = 57009,
+	X_ISCII_GU = 57010,
+	X_ISCII_PA = 57011,
+	UTF_7 = 65000,
+	UTF_8 = 65001
+
+
 }
 
 /**
@@ -102,6 +255,9 @@ public void beep(int freq, int duration) @system {
 	}
 }
 
+/**
+*  clear Clears the console output and set cursor at 0,0
+*/
 public void clear() @system {
 	version(Windows) {
 		// http://support.microsoft.com/kb/99261
@@ -113,8 +269,11 @@ public void clear() @system {
 		GetConsoleScreenBufferInfo(hConsole, &csbi);
 		dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
 
+		// Flush current input buffer
+		FlushConsoleInputBuffer(hConsole);
+
 		// Fill the screen with blanks
-		FillConsoleOutputCharacterW(hConsole, cast(wchar)' ', dwConSize, coordScreen, null);
+		FillConsoleOutputCharacterW(hConsole, cast(WCHAR)' ', dwConSize, coordScreen, null);
 
 		// Get current text attributes
 		GetConsoleScreenBufferInfo(hConsole, &csbi);
@@ -127,13 +286,16 @@ public void clear() @system {
 	}
 }
 
+/**
+* getError Gets latest error the system provides.
+*/
 string getError() {
 	version(Windows) {
 		string strErrMessage = "";
 		PTSTR lpErrorText = null;
 
-		FormatMessageW(cast(uint)(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER), 
-					   null, GetLastError(), cast(uint)0, lpErrorText, MAX_PATH, null);
+		FormatMessageW(cast(DWORD)(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER), 
+					   null, GetLastError(), cast(DWORD)0, lpErrorText, MAX_PATH, null);
 
 		strErrMessage = to!string(lpErrorText);
 	}
@@ -141,8 +303,11 @@ string getError() {
 	return strErrMessage;
 }
 
+/**
+* getInputEncoding 
+*/
 ConsoleEncoding getInputEncoding() {
-	return ConsoleEncoding.ASCII;
+	return ConsoleEncoding.UTF_8;
 }
 
 int getMaxWindowHeight() { 
@@ -153,8 +318,19 @@ int getMaxWindowWidth() {
 	return 0;
 }
 
+/**
+* getOutputEncoding Gets the output encoding
+*/
 ConsoleEncoding getOutputEncoding() { 
-	return ConsoleEncoding.ASCII;
+	ConsoleEncoding enc;
+
+	version(Windows) {
+		import std.stdio;
+
+		enc = cast(ConsoleEncoding)(GetConsoleOutputCP());
+	}
+	
+	return enc;
 }
 
 /**
@@ -265,7 +441,7 @@ void setTitle(string title) @system {
 	}
 }
 
-void setWindowHeight() {
+void setWindowHeight(int rows) {
 }
 
 void setWindowLeftPosition(int xPos) {
@@ -280,5 +456,5 @@ void setWindowSize(int row, int col) {
 void setWindowTopPosition(int yPos) {
 }
 
-void setWindowWidth() {
+void setWindowWidth(int cols) {
 }
