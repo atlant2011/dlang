@@ -31,7 +31,7 @@ import std.uni;
 import core.stdc.stdarg;
 
 version(Windows) {
-	public import core.sys.windows.windows;
+	import core.sys.windows.windows;
 
 	extern(Windows) {
 		BOOL Beep(DWORD dwFreq, DWORD dwDuration);
@@ -43,7 +43,11 @@ version(Windows) {
 		HANDLE GetStdHandle(DWORD nStdHandle);
 		BOOL GetConsoleScreenBufferInfo(HANDLE hConsoleOutput, PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
 		DWORD FormatMessageW(DWORD dwFlags, LPCVOID lpSource,  DWORD dwMessageId, DWORD dwLanguageId, LPTSTR lpBuffer,
-							DWORD nSize, va_list *Arguments);
+							 DWORD nSize, va_list *Arguments);
+		BOOL FillConsoleOutputCharacterW(HANDLE hConsoleOutput, WCHAR cCharacter, DWORD nLength,
+									    COORD dwWriteCoord, LPDWORD lpNumberOfCharsWritten);
+		BOOL FillConsoleOutputAttribute(HANDLE hConsole, WORD wAttribute, DWORD nLength, COORD dwWriteCoord, 
+										LPDWORD lpNumberOfAttrsWritten);
 	}
 }
 
@@ -98,7 +102,29 @@ public void beep(int freq, int duration) @system {
 	}
 }
 
-public void clear() {
+public void clear() @system {
+	version(Windows) {
+		// http://support.microsoft.com/kb/99261
+		COORD coordScreen = { 0, 0 };
+		HANDLE hConsole = GetStdHandle(-11);
+		CONSOLE_SCREEN_BUFFER_INFO csbi; // Buffer info.
+		DWORD dwConSize; // number of char cells in current buffer
+
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+		dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+
+		// Fill the screen with blanks
+		FillConsoleOutputCharacterW(hConsole, cast(wchar)' ', dwConSize, coordScreen, null);
+
+		// Get current text attributes
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+		// Set buffer's info accordingly.
+		FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, null);
+
+		// Set cursor at 0,0
+		SetConsoleCursorPosition(hConsole, coordScreen);
+	}
 }
 
 string getError() {
