@@ -269,7 +269,7 @@ public void clear() @system {
 	version(Windows) {
 		// http://support.microsoft.com/kb/99261
 		COORD coordScreen = { 0, 0 };
-		HANDLE hConsole = GetStdHandle(-11);
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO csbi; // Buffer info.
 		DWORD dwConSize; // number of char cells in current buffer
 
@@ -291,6 +291,40 @@ public void clear() @system {
 		// Set cursor at 0,0
 		SetConsoleCursorPosition(hConsole, coordScreen);
 	}
+}
+
+/**
+* getBufferHeight Gets the buffer's height in rows.
+* returns Row count.
+*/
+public int getBufferHeight() @system {
+	int rows = 0;
+
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+		rows = csbi.dwSize.Y;
+	}
+
+	return rows;
+}
+
+/**
+* getBufferWidth Gets the buffer's width in columns.
+* returns Columns count.
+*/
+public int getBufferWidth() @system {
+	int cols = 0;
+
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+		cols = csbi.dwSize.X;
+	}
+
+	return cols;
 }
 
 /**
@@ -335,7 +369,7 @@ public int getMaxWindowHeight() @system {
 	int height = 0;
 
 	version(Windows) {
-		COORD c = GetLargestConsoleWindowSize(GetStdHandle(-11));
+		COORD c = GetLargestConsoleWindowSize(GetStdHandle(STD_OUTPUT_HANDLE));
 		height = c.Y;
 	}
 
@@ -351,7 +385,7 @@ public int getMaxWindowWidth() @system {
 	int width = 0;
 
 	version(Windows) {
-		COORD c = GetLargestConsoleWindowSize(GetStdHandle(-11));
+		COORD c = GetLargestConsoleWindowSize(GetStdHandle(STD_OUTPUT_HANDLE));
 		width = c.X;
 	}
 
@@ -396,8 +430,21 @@ public string getTitle() @system {
 }
 
 // http://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
-int getWindowHeight() {
-	return 0;
+/**
+* getWindowHeight Gets the console window's height, in rows.
+* returns Rows count.
+*/
+public int getWindowHeight() {
+	int rows = 0;
+	
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+		rows = csbi.srWindow.Bottom;
+	}
+
+	return rows;
 }
 
 int getWindowLeftPosition() {
@@ -461,14 +508,19 @@ void setCursorTop(int rowPos) {
 void setCursorVisisble(bool visible) {
 }
 
+/**
+* setForegroundColor Sets the output text's color
+* param color Text's console color.
+*/
 void setForegroundColor(ConsoleColor color) @system {
 	version(Windows) {
-		SetConsoleTextAttribute(GetStdHandle(-11), cast(WORD)color); 
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), cast(WORD)color); 
 	}
 }
 
 /**
 * setInputEncoding Sets the input encoding (Default is UTF_8)
+* param encoding Console input's encoding.
 */
 void setInputEncoding(ConsoleEncoding encoding) {
 	version(Windows) {
@@ -478,6 +530,7 @@ void setInputEncoding(ConsoleEncoding encoding) {
 
 /**
 * setOutputEncoding Set the outputs encoding
+* param encoding Console output's encoding
 */
 void setOutputEncoding(ConsoleEncoding encoding) { 
 	version(Windows) {
