@@ -56,6 +56,7 @@ version(Windows) {
 		BOOL SetConsoleCP(UINT wCodePageID);
 		COORD GetLargestConsoleWindowSize(HANDLE hConsoleOutput);
 		SHORT GetKeyState(int nVirtKey);
+		BOOL GetConsoleMode(HANDLE hConsoleHandle, LPDWORD lpMode);
 
 		//INT GetSystemMetrics(INT nIndex);
 
@@ -511,11 +512,26 @@ public bool isCapsLockOn() @system {
 	return isPressed;
 }
 
-bool isControlCInput() {
-	return true;
+/**
+* isControlCAnInput Determine wether or not ctrl+c is an input
+* returns True if ctrl+c is a valid input. False otherwise.	False by default on Windows.
+*/
+public bool isControlCInput() @system {
+	bool isInput = false;
+
+	version(Windows) {
+		DWORD lpMode;
+		GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &lpMode);
+		isInput = (lpMode & ENABLE_PROCESSED_INPUT) == 0;
+	}
+
+	return isInput;
 }
 
-bool isKeyAvailable() {
+/**
+*
+*/
+public bool isKeyAvailable() @system {
 	return true;
 }
 
