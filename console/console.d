@@ -434,14 +434,14 @@ public string getTitle() @system {
 * getWindowHeight Gets the console window's height, in rows.
 * returns Rows count.
 */
-public int getWindowHeight() {
+public int getWindowHeight() @system {
 	int rows = 0;
 	
 	version(Windows) {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 
-		rows = csbi.srWindow.Bottom;
+		rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 	}
 
 	return rows;
@@ -455,8 +455,21 @@ int getWindowTopPosition() {
 	return 0;
 }
 
-int getWindowWidth() {
-	return 0;
+/**
+* getWindowWidth Gets the console window's width, in columns.
+* returns Columns count.
+*/
+public int getWindowWidth() @system {
+	int cols = 0;
+
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+		cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+	}
+
+	return cols;
 }
 
 bool isCapLockOn() {
