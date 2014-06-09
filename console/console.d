@@ -55,6 +55,8 @@ version(Windows) {
 		UINT GetConsoleCP(); // input cp
 		BOOL SetConsoleCP(UINT wCodePageID);
 		COORD GetLargestConsoleWindowSize(HANDLE hConsoleOutput);
+		SHORT GetKeyState(int nVirtKey);
+
 		//INT GetSystemMetrics(INT nIndex);
 
 	}
@@ -236,8 +238,6 @@ public enum ConsoleEncoding : uint  {
 	X_ISCII_PA = 57011,
 	UTF_7 = 65000,
 	UTF_8 = 65001
-
-
 }
 
 /**
@@ -331,7 +331,7 @@ public int getBufferWidth() @system {
 * getError Gets latest error the system provides.
 * returns Error string.
 */
-public string getError() {
+public string getError() @system {
 	version(Windows) {
 		string strErrMessage = "";
 		PTSTR lpErrorText = null;
@@ -349,7 +349,7 @@ public string getError() {
 * getInputEncoding Gets the input encoding (default is UTF_8 for D)
 * returns Input encoding
 */
-public ConsoleEncoding getInputEncoding() {
+public ConsoleEncoding getInputEncoding() @system {
 	ConsoleEncoding enc;
 
 	version(Windows) {
@@ -496,8 +496,19 @@ public int getWindowWidth() @system {
 	return cols;
 }
 
-bool isCapLockOn() {
-	return true;
+/**
+* isCapsLockOn Determine wether caps lock is on or not.
+* returns True if caps lock is on. False otherwise.
+*/
+public bool isCapsLockOn() @system {
+	bool isPressed = false;
+
+	version(Windows) {
+		short r = GetKeyState(VK_CAPITAL);
+		isPressed = ((r & 1) == 1); 
+	}
+
+	return isPressed;
 }
 
 bool isControlCInput() {
