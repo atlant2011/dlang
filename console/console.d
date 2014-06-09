@@ -22,13 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE. 
 
 */
+// NOTE: http://msdn.microsoft.com/en-us/library/windows/desktop/ms687410(v=vs.85).aspx
 module console;
 
 import std.string;
 import std.utf;
 import std.conv;
 import std.uni;
-import core.stdc.stdarg;
+import core.stdc.stdarg; // required for va_list
 
 version(Windows) {
 	import core.sys.windows.windows;
@@ -50,6 +51,12 @@ version(Windows) {
 										LPDWORD lpNumberOfAttrsWritten);
 		BOOL FlushConsoleInputBuffer(HANDLE hConsoleInput);
 		UINT GetConsoleOutputCP();
+		BOOL SetConsoleOuputCPCP(UINT wCodePageID);
+		UINT GetConsoleCP(); // input cp
+		BOOL SetConsoleCP(UINT wCodePageID);
+		COORD GetLargestConsoleWindowSize(HANDLE hConsoleOutput);
+		//INT GetSystemMetrics(INT nIndex);
+
 	}
 }
 
@@ -288,8 +295,9 @@ public void clear() @system {
 
 /**
 * getError Gets latest error the system provides.
+* returns Error string.
 */
-string getError() {
+public string getError() {
 	version(Windows) {
 		string strErrMessage = "";
 		PTSTR lpErrorText = null;
@@ -304,24 +312,57 @@ string getError() {
 }
 
 /**
-* getInputEncoding 
+* getInputEncoding Gets the input encoding (default is UTF_8 for D)
+* returns Input encoding
 */
-ConsoleEncoding getInputEncoding() {
+public ConsoleEncoding getInputEncoding() {
+	ConsoleEncoding enc;
+
+	version(Windows) {
+		enc = cast(ConsoleEncoding)(GetConsoleCP());
+	}
+
 	return ConsoleEncoding.UTF_8;
 }
 
-int getMaxWindowHeight() { 
-	return 0;
-}
+/**
+* getMaxWindowHeight Gets the max window's height of the console, in rows.
+* returns Maximum rows count
+* remarks The function does not take into consideration the size of the console screen buffer.
+*		  Use `getMaxBufferSize()` instead.
+*/
+public int getMaxWindowHeight() @system { 
+	int height = 0;
 
-int getMaxWindowWidth() {
-	return 0;
+	version(Windows) {
+		COORD c = GetLargestConsoleWindowSize(GetStdHandle(-11));
+		height = c.Y;
+	}
+
+	return height;
 }
 
 /**
-* getOutputEncoding Gets the output encoding
+* getMaxWindowWidth Gets the max window's width of the console, in columns.
+* returns Maximum columns count
+* remarks The function does not take into consideration the size of the console screen buffer.
 */
-ConsoleEncoding getOutputEncoding() { 
+public int getMaxWindowWidth() @system {
+	int width = 0;
+
+	version(Windows) {
+		COORD c = GetLargestConsoleWindowSize(GetStdHandle(-11));
+		width = c.X;
+	}
+
+	return width;
+}
+
+/**
+* getOutputEncoding Gets the output encoding.
+* returns Output encoding
+*/
+public ConsoleEncoding getOutputEncoding() @system { 
 	ConsoleEncoding enc;
 
 	version(Windows) {
@@ -353,6 +394,7 @@ public string getTitle() @system {
 
 	return to!string(title);
 }
+
 // http://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
 int getWindowHeight() {
 	return 0;
@@ -425,10 +467,22 @@ void setForegroundColor(ConsoleColor color) @system {
 	}
 }
 
+/**
+* setInputEncoding Sets the input encoding (Default is UTF_8)
+*/
 void setInputEncoding(ConsoleEncoding encoding) {
+	version(Windows) {
+		SetConsoleCP(cast(UINT)(encoding));
+	}
 }
 
+/**
+* setOutputEncoding Set the outputs encoding
+*/
 void setOutputEncoding(ConsoleEncoding encoding) { 
+	version(Windows) {
+		SetConsoleOutputCP(cast(UINT)(encoding));
+	}
 }
 
 /**
