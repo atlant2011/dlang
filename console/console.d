@@ -363,7 +363,6 @@ public ConsoleEncoding getInputEncoding() {
 * getMaxWindowHeight Gets the max window's height of the console, in rows.
 * returns Maximum rows count
 * remarks The function does not take into consideration the size of the console screen buffer.
-*		  Use `getMaxBufferSize()` instead.
 */
 public int getMaxWindowHeight() @system { 
 	int height = 0;
@@ -429,7 +428,6 @@ public string getTitle() @system {
 	return to!string(title);
 }
 
-// http://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
 /**
 * getWindowHeight Gets the console window's height, in rows.
 * returns Rows count.
@@ -447,12 +445,38 @@ public int getWindowHeight() @system {
 	return rows;
 }
 
-int getWindowLeftPosition() {
-	return 0;
+/**
+* getWindowLeftPosition The leftmost console window's position measured in columns.
+* returns Columns's position
+*/
+public int getWindowLeftPosition() @system {
+	int left = 0;
+
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+		left = csbi.srWindow.Left;		
+	}
+
+	return left;
 }
 
-int getWindowTopPosition() {
-	return 0;
+/**
+* getWindowTopPosition The topmost console window's position measured in rows.
+* returns Row's position
+*/
+public int getWindowTopPosition() @system {
+	int top = 0;
+
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+		top = csbi.srWindow.Top;
+	}
+
+	return top;
 }
 
 /**
