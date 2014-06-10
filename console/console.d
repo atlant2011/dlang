@@ -35,30 +35,29 @@ version(Windows) {
 	import core.sys.windows.windows;
 
 	extern(Windows) {
-		BOOL Beep(DWORD dwFreq, DWORD dwDuration);
-		BOOL SetConsoleTitleW(LPCWSTR lpConsoleTitle);
-		DWORD GetConsoleTitleW(LPWSTR lpConsoleTitle, DWORD nSize);
-		BOOL SetConsoleTextAttribute(HANDLE hConsoleOutput, WORD wAttributes);
-		HWND GetConsoleWindow();
-		DWORD GetLastError();
-		HANDLE GetStdHandle(DWORD nStdHandle);
-		BOOL GetConsoleScreenBufferInfo(HANDLE hConsoleOutput, PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
-		DWORD FormatMessageW(DWORD dwFlags, LPCVOID lpSource,  DWORD dwMessageId, DWORD dwLanguageId, LPTSTR lpBuffer,
-							 DWORD nSize, va_list *Arguments);
-		BOOL FillConsoleOutputCharacterW(HANDLE hConsoleOutput, WCHAR cCharacter, DWORD nLength,
-									    COORD dwWriteCoord, LPDWORD lpNumberOfCharsWritten);
-		BOOL FillConsoleOutputAttribute(HANDLE hConsole, WORD wAttribute, DWORD nLength, COORD dwWriteCoord, 
-										LPDWORD lpNumberOfAttrsWritten);
-		BOOL FlushConsoleInputBuffer(HANDLE hConsoleInput);
-		UINT GetConsoleOutputCP();
-		BOOL SetConsoleOuputCPCP(UINT wCodePageID);
-		UINT GetConsoleCP(); // input cp
-		BOOL SetConsoleCP(UINT wCodePageID);
-		COORD GetLargestConsoleWindowSize(HANDLE hConsoleOutput);
-		SHORT GetKeyState(int nVirtKey);
-		BOOL GetConsoleMode(HANDLE hConsoleHandle, LPDWORD lpMode);
-		//INT GetSystemMetrics(INT nIndex);
-
+		BOOL	Beep(DWORD dwFreq, DWORD dwDuration);
+		BOOL	FillConsoleOutputAttribute(HANDLE hConsole, WORD wAttribute, DWORD nLength, COORD dwWriteCoord, 
+										   LPDWORD lpNumberOfAttrsWritten);
+		BOOL	FillConsoleOutputCharacterW(HANDLE hConsoleOutput, WCHAR cCharacter, DWORD nLength,
+											COORD dwWriteCoord, LPDWORD lpNumberOfCharsWritten);
+		BOOL	FlushConsoleInputBuffer(HANDLE hConsoleInput);
+		DWORD	FormatMessageW(DWORD dwFlags, LPCVOID lpSource,  DWORD dwMessageId, DWORD dwLanguageId, 
+							   LPTSTR lpBuffer, DWORD nSize, va_list *Arguments);
+		UINT	GetConsoleCP();	// input cp
+		BOOL	GetConsoleMode(HANDLE hConsoleHandle, LPDWORD lpMode);
+		UINT	GetConsoleOutputCP();
+		DWORD	GetConsoleTitleW(LPWSTR lpConsoleTitle, DWORD nSize);
+		BOOL	GetConsoleScreenBufferInfo(HANDLE hConsoleOutput, PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
+		HWND	GetConsoleWindow();
+		SHORT	GetKeyState(INT nVirtKey);
+		COORD	GetLargestConsoleWindowSize(HANDLE hConsoleOutput);
+		DWORD	GetLastError();
+		HANDLE	GetStdHandle(DWORD nStdHandle);
+		BOOL	SetConsoleCP(UINT wCodePageID);
+		BOOL	SetConsoleOuputCP(UINT wCodePageID);
+		BOOL	SetConsoleScreenBufferSize(HANDLE hConsoleOutput, COORD dwSize);
+		BOOL	SetConsoleTextAttribute(HANDLE hConsoleOutput, WORD wAttributes);
+		BOOL	SetConsoleTitleW(LPCWSTR lpConsoleTitle);
 	}
 }
 
@@ -574,6 +573,7 @@ public void resetColors() @system {
 
 /**
 * setBackgroundColor Sets the background's color
+* param color Background's color.
 */
 public void setBackgroundColor(ConsoleColor color) @system {
 	version(Windows) {
@@ -587,7 +587,21 @@ public void setBackgroundColor(ConsoleColor color) @system {
 	}
 }
 
-void setBufferHeight(int rows) {
+/**
+* setBufferHeight Sets the buffer height, in rows.
+* param rows Row count in height.
+*/
+public void setBufferHeight(short rows) @system {
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+		COORD coord = { csbi.dwSize.X, rows };		
+
+		SetConsoleScreenBufferSize(hConsole, coord);
+	}
 }
 
 void setBufferSize(int rows, int cols) {
@@ -611,14 +625,14 @@ void setCursorSize(byte percent) {
 void setCursorTop(int rowPos) {
 }
 
-void setCursorVisisble(bool visible) {
+public void setCursorVisisble(bool visible) @system {
 }
 
 /**
 * setForegroundColor Sets the output text's color
 * param color Text's console color.
 */
-void setForegroundColor(ConsoleColor color) @system {
+public void setForegroundColor(ConsoleColor color) @system {
 	version(Windows) {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -634,7 +648,7 @@ void setForegroundColor(ConsoleColor color) @system {
 * setInputEncoding Sets the input encoding (Default is UTF_8)
 * param encoding Console input's encoding.
 */
-void setInputEncoding(ConsoleEncoding encoding) {
+public void setInputEncoding(ConsoleEncoding encoding) @system {
 	version(Windows) {
 		SetConsoleCP(cast(UINT)(encoding));
 	}
@@ -644,7 +658,7 @@ void setInputEncoding(ConsoleEncoding encoding) {
 * setOutputEncoding Set the outputs encoding
 * param encoding Console output's encoding
 */
-void setOutputEncoding(ConsoleEncoding encoding) { 
+public void setOutputEncoding(ConsoleEncoding encoding) @system { 
 	version(Windows) {
 		SetConsoleOutputCP(cast(UINT)(encoding));
 	}
@@ -654,7 +668,7 @@ void setOutputEncoding(ConsoleEncoding encoding) {
 * setTitle Sets the console's title
 * param title Console's title.
 */
-void setTitle(string title) @system {
+public void setTitle(string title) @system {
 	version(Windows) {
 		SetConsoleTitleW(toUTF16z(title));
 	}
