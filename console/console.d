@@ -620,7 +620,13 @@ void setCursorVisisble(bool visible) {
 */
 void setForegroundColor(ConsoleColor color) @system {
 	version(Windows) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), cast(WORD)color); 
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		// Get buffer info.
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+		SetConsoleTextAttribute(hConsole, cast(WORD)(csbi.wAttributes | color));
 	}
 }
 
