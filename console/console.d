@@ -296,7 +296,7 @@ public void clear() @system {
 * getBufferHeight Gets the buffer's height in rows.
 * returns Row count.
 */
-public int getBufferHeight() @system {
+public short getBufferHeight() @system {
 	int rows = 0;
 
 	version(Windows) {
@@ -313,7 +313,7 @@ public int getBufferHeight() @system {
 * getBufferWidth Gets the buffer's width in columns.
 * returns Columns count.
 */
-public int getBufferWidth() @system {
+public short getBufferWidth() @system {
 	int cols = 0;
 
 	version(Windows) {
@@ -363,7 +363,7 @@ public ConsoleEncoding getInputEncoding() @system {
 * returns Maximum rows count
 * remarks The function does not take into consideration the size of the console screen buffer.
 */
-public int getMaxWindowHeight() @system { 
+public short getMaxWindowHeight() @system { 
 	int height = 0;
 
 	version(Windows) {
@@ -379,7 +379,7 @@ public int getMaxWindowHeight() @system {
 * returns Maximum columns count
 * remarks The function does not take into consideration the size of the console screen buffer.
 */
-public int getMaxWindowWidth() @system {
+public short getMaxWindowWidth() @system {
 	int width = 0;
 
 	version(Windows) {
@@ -431,7 +431,7 @@ public string getTitle() @system {
 * getWindowHeight Gets the console window's height, in rows.
 * returns Rows count.
 */
-public int getWindowHeight() @system {
+public short getWindowHeight() @system {
 	int rows = 0;
 	
 	version(Windows) {
@@ -448,7 +448,7 @@ public int getWindowHeight() @system {
 * getWindowLeftPosition The leftmost console window's position measured in columns.
 * returns Columns's position
 */
-public int getWindowLeftPosition() @system {
+public short getWindowLeftPosition() @system {
 	int left = 0;
 
 	version(Windows) {
@@ -465,7 +465,7 @@ public int getWindowLeftPosition() @system {
 * getWindowTopPosition The topmost console window's position measured in rows.
 * returns Row's position
 */
-public int getWindowTopPosition() @system {
+public short getWindowTopPosition() @system {
 	int top = 0;
 
 	version(Windows) {
@@ -482,7 +482,7 @@ public int getWindowTopPosition() @system {
 * getWindowWidth Gets the console window's width, in columns.
 * returns Columns count.
 */
-public int getWindowWidth() @system {
+public short getWindowWidth() @system {
 	int cols = 0;
 
 	version(Windows) {
@@ -604,10 +604,34 @@ public void setBufferHeight(short rows) @system {
 	}
 }
 
-void setBufferSize(int rows, int cols) {
+/**
+* setBufferSize Sets the buffer size in columns and rows.
+* param cols Columns (width)
+* param rows Rows (height)
+*/
+public void setBufferSize(short cols, short rows) @system {
+	version(Windows) {
+		COORD coord = { cols, rows };		
+
+		SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+	}
 }
 
-void setBufferWidth(int cols) {
+/**
+* setBufferWidth Sets the buffer width, in columns.
+* param cols Columns (width)
+*/
+public void setBufferWidth(short cols) @system {
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+		COORD coord = { cols, csbi.dwSize.Y };		
+
+		SetConsoleScreenBufferSize(hConsole, coord);
+	}
 }
 
 void setControlCInput(bool isInput) {
