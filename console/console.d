@@ -535,8 +535,19 @@ public bool isKeyAvailable() @system {
 	return true;
 }
 
-bool isNumLockOn() {
-	return true;
+/**
+* isNumLockOn Determines wether the number lock is on or off
+* returns True if number lock is activated. False otherwise.
+*/
+public bool isNumLockOn() @system {
+	bool isPressed = false;
+
+	version(Windows) {
+		short r = GetKeyState(VK_NUMLOCK);
+		isPressed = ((r & 1) == 1); 
+	}
+
+	return isPressed;
 }
 
 void resetColors() {
