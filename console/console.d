@@ -44,6 +44,7 @@ version(Windows) {
 		DWORD	FormatMessageW(DWORD dwFlags, LPCVOID lpSource,  DWORD dwMessageId, DWORD dwLanguageId, 
 							   LPTSTR lpBuffer, DWORD nSize, va_list *Arguments);
 		UINT	GetConsoleCP();	// input cp
+		BOOL	GetConsoleCursorInfo(HANDLE hConsoleOutput, PCONSOLE_CURSOR_INFO lpConsoleCursorInfo);
 		BOOL	GetConsoleMode(HANDLE hConsoleHandle, LPDWORD lpMode);
 		UINT	GetConsoleOutputCP();
 		DWORD	GetConsoleTitleW(LPWSTR lpConsoleTitle, DWORD nSize);
@@ -58,6 +59,7 @@ version(Windows) {
 		BOOL	SetConsoleScreenBufferSize(HANDLE hConsoleOutput, COORD dwSize);
 		BOOL	SetConsoleTextAttribute(HANDLE hConsoleOutput, WORD wAttributes);
 		BOOL	SetConsoleTitleW(LPCWSTR lpConsoleTitle);
+		BOOL	SetConsoleCursorInfo(HANDLE hConsoleOutput, const CONSOLE_CURSOR_INFO *lpConsoleCursorInfo);
 	}
 }
 
@@ -297,7 +299,7 @@ public void clear() @system {
 * returns Row count.
 */
 public short getBufferHeight() @system {
-	int rows = 0;
+	short rows = 0;
 
 	version(Windows) {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -314,7 +316,7 @@ public short getBufferHeight() @system {
 * returns Columns count.
 */
 public short getBufferWidth() @system {
-	int cols = 0;
+	short cols = 0;
 
 	version(Windows) {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -364,7 +366,7 @@ public ConsoleEncoding getInputEncoding() @system {
 * remarks The function does not take into consideration the size of the console screen buffer.
 */
 public short getMaxWindowHeight() @system { 
-	int height = 0;
+	short height = 0;
 
 	version(Windows) {
 		COORD c = GetLargestConsoleWindowSize(GetStdHandle(STD_OUTPUT_HANDLE));
@@ -380,7 +382,7 @@ public short getMaxWindowHeight() @system {
 * remarks The function does not take into consideration the size of the console screen buffer.
 */
 public short getMaxWindowWidth() @system {
-	int width = 0;
+	short width = 0;
 
 	version(Windows) {
 		COORD c = GetLargestConsoleWindowSize(GetStdHandle(STD_OUTPUT_HANDLE));
@@ -432,13 +434,13 @@ public string getTitle() @system {
 * returns Rows count.
 */
 public short getWindowHeight() @system {
-	int rows = 0;
+	short rows = 0;
 	
 	version(Windows) {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 
-		rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+		rows = cast(SHORT)(csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
 	}
 
 	return rows;
@@ -449,7 +451,7 @@ public short getWindowHeight() @system {
 * returns Columns's position
 */
 public short getWindowLeftPosition() @system {
-	int left = 0;
+	short left = 0;
 
 	version(Windows) {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -466,7 +468,7 @@ public short getWindowLeftPosition() @system {
 * returns Row's position
 */
 public short getWindowTopPosition() @system {
-	int top = 0;
+	short top = 0;
 
 	version(Windows) {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -483,13 +485,13 @@ public short getWindowTopPosition() @system {
 * returns Columns count.
 */
 public short getWindowWidth() @system {
-	int cols = 0;
+	short cols = 0;
 
 	version(Windows) {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 
-		cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+		cols = cast(SHORT)(csbi.srWindow.Right - csbi.srWindow.Left + 1);
 	}
 
 	return cols;
@@ -649,7 +651,18 @@ void setCursorSize(byte percent) {
 void setCursorTop(int rowPos) {
 }
 
-public void setCursorVisisble(bool visible) @system {
+/**
+* setCursorVisible Sets the cursor's visibility
+* param visible True if visible, or false if invisible.
+*/
+public void setCursorVisible(bool visible) @system {
+	version(Windows) {
+		CONSOLE_CURSOR_INFO cci;
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		GetConsoleCursorInfo(hConsole, &cci);
+		cci.bVisible = visible;
+		SetConsoleCursorInfo(hConsole, &cci);
+	}
 }
 
 /**
