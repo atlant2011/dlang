@@ -572,7 +572,19 @@ public void resetColors() @system {
 	}
 }
 
-void setBackgroundColor(ConsoleColor color) {
+/**
+* setBackgroundColor Sets the background's color
+*/
+public void setBackgroundColor(ConsoleColor color) @system {
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		// Get buffer info.
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+		SetConsoleTextAttribute(hConsole, cast(WORD)(csbi.wAttributes | (color << 4)));
+	}
 }
 
 void setBufferHeight(int rows) {
