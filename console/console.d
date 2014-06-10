@@ -645,7 +645,18 @@ void setCursorLeft(int columnPos) {
 void setCursorPosition(int row, int col) {
 }
 
-void setCursorSize(byte percent) {
+/**
+* setCursorSize Sets the console's cursor size
+* param percent Size in percentage (100 is max for Windows)
+*/
+public void setCursorSize(byte percent) @system {
+	version(Windows) {
+		CONSOLE_CURSOR_INFO cci;
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		GetConsoleCursorInfo(hConsole, &cci);
+		cci.dwSize = percent > 100 ? 100 : percent;
+		SetConsoleCursorInfo(hConsole, &cci);
+	}
 }
 
 void setCursorTop(int rowPos) {
