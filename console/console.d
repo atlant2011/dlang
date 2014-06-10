@@ -57,7 +57,6 @@ version(Windows) {
 		COORD GetLargestConsoleWindowSize(HANDLE hConsoleOutput);
 		SHORT GetKeyState(int nVirtKey);
 		BOOL GetConsoleMode(HANDLE hConsoleHandle, LPDWORD lpMode);
-
 		//INT GetSystemMetrics(INT nIndex);
 
 	}
@@ -550,7 +549,27 @@ public bool isNumLockOn() @system {
 	return isPressed;
 }
 
-void resetColors() {
+/**
+* resetColors Resets the console's colors.
+*/
+public void resetColors() @system {
+	version(Windows) {
+		COORD coord = { 0, 0 };
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		// Get buffer info.
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+		// Get current text attributes
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+
+		// Set buffer's info accordingly.
+		FillConsoleOutputAttribute(hConsole, ConsoleColor.Gray | (ConsoleColor.Black << 4), csbi.dwSize.X * csbi.dwSize.Y, coord, null);
+
+		// Set console text attributes.
+		SetConsoleTextAttribute(hConsole, ConsoleColor.Gray | (ConsoleColor.Black << 4));
+	}
 }
 
 void setBackgroundColor(ConsoleColor color) {
