@@ -55,6 +55,7 @@ version(Windows) {
 		DWORD	GetLastError();
 		HANDLE	GetStdHandle(DWORD nStdHandle);
 		BOOL	SetConsoleCP(UINT wCodePageID);
+		BOOL	SetConsoleMode(HANDLE hConsoleHandle,DWORD dwMode);
 		BOOL	SetConsoleOuputCP(UINT wCodePageID);
 		BOOL	SetConsoleScreenBufferSize(HANDLE hConsoleOutput, COORD dwSize);
 		BOOL	SetConsoleTextAttribute(HANDLE hConsoleOutput, WORD wAttributes);
@@ -632,7 +633,21 @@ public void setBufferWidth(short cols) @system {
 	}
 }
 
+/**
+* setControlCInput Sets CTRL+C as input or not
+* param isInput True if CTRL+C must be valid input or false otherwise
+*/
 void setControlCInput(bool isInput) {
+	version(Windows) {
+		DWORD currentMode;
+		HANDLE hConsole = GetStdHandle(STD_INPUT_HANDLE);
+		GetConsoleMode(hConsole, &currentMode);	
+		
+		if(isInput)
+			SetConsoleMode(hConsole, cast(DWORD)(currentMode & ~ENABLE_PROCESSED_INPUT));
+		else
+			SetConsoleMode(hConsole, cast(DWORD)(currentMode | ENABLE_PROCESSED_INPUT));
+	}
 }
 
 void setCursorLeft(int columnPos) {
