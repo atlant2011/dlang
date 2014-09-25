@@ -1,51 +1,27 @@
-/+
-CLASS:			DoubleLinkedList(T)
-AUTHORS:		Alexandre "TryHard" Leblanc, <alex.cs00@mail.com>, <alex.cs00@yahoo.ca>
-				Michael Tran (makrattaur)
-DESCRIPTION:	Doubly Linked List!
-# Properties
-o count					:	Number of element in the list
-o empty					:	Returns wether or not the list is empty
-o max					:	Returns maximum value
-o min					:	Returns minimum value
-# Methods
-o appendList()			:	Append another list at the end of this list
-o clear()				:	Clear the list and its elements
-o contains()			:	Returns wether or not the element is in list
-o countItem()			:	Returns number of an item occurence in list
-o getMaxValue()			:	Returns the max value. Use 'max' property instead.
-o getMinValue()			:	Returns the min value. Use 'min' property instead.
-o getValueAt()			:	Returns the value T at given position
-o insert()				:	Inserts a T element on TOP of the list (becomes first)
-o insertAt()			:	Inserts a T element at a given position (push on bottom)
-o insertLast()			:	Inserts a T element at the BOTTOM of the list (becomes last)
-o makeSingleValues()	:	Remove all duplicates of each elements.
-o prependList()			:	Prepend a list (on top of current) while conserving same order.
-o removeAt()			:	Remove item at a given position
-o removeItem()			:	Remove first or all occurence of and item T in the list (firstOnly = true by default)
-o reverse()				:	Reverse the list
-o sort()				:	TODO (As in: not implemented)
-o toArray()				:	Copy the list into an array
-o toReverseArray()		:	Copy the reversed list into	an array (More performant than reverse() then toArray())
-# Operators
-o opIndex (List[index]) :	Equivalent to getValueAt(index)
-o opOpAssign(~=)		:	Equivalent to appendList(DoublyLinkedList!(T) anotherList)
-o opSlice (List[x..y])	:	Equivalent to toArray()[x..y]
-o opDollar (List[x..$])	:	Dollar represents count-1. Therefore [x..$] is equivalent to [x..count-1]
+/*
+The MIT License (MIT)
 
-NOTE:			Please submit any bugs, comments or suggestion by mail on my @mail domain --TryHard.
-Use with ["import dllist;"]
-Then use auto myVar = DoublyLinkedList!(T type)();
-Unittests passed.
-Sorting will come eventually.
+Copyright (c) 2014 Alexandre "TryHard" Leblanc, <alex.cs00@yahoo.ca>, <www.mrtryhard.info>
 
-D_VER:			Works under DMD2.0.65+ 
-Works under Geany and VisualD editors/plugins.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-VERSION_HISTORY:	[1.2.1] Added ~= operator (appendList)
-							Added functions appendList and prependList
-					[1.0] Comitted to GitHub
-+/
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE. 
+
+*/
 
 module dllist;
 

@@ -35,6 +35,23 @@ version(Windows) {
 	import core.sys.windows.windows;
 
 	extern(Windows) {
+		/**
+		* CONSOLE_SCREEN_BUFFER_INFOEX : Not implemented in current std.windows;
+		*/
+		struct CONSOLE_SCREEN_BUFFER_INFOEX {
+			ULONG      cbSize;
+			COORD      dwSize;
+			COORD      dwCursorPosition;
+			WORD       wAttributes;
+			SMALL_RECT srWindow;
+			COORD      dwMaximumWindowSize;
+			WORD       wPopupAttributes;
+			BOOL       bFullscreenSupported;
+			COLORREF   ColorTable[16];
+		}
+
+		alias CONSOLE_SCREEN_BUFFER_INFOEX *PCONSOLE_SCREEN_BUFFER_INFOEX;
+
 		BOOL	Beep(DWORD dwFreq, DWORD dwDuration);
 		BOOL	FillConsoleOutputAttribute(HANDLE hConsole, WORD wAttribute, DWORD nLength, COORD dwWriteCoord, 
 										   LPDWORD lpNumberOfAttrsWritten);
@@ -49,6 +66,7 @@ version(Windows) {
 		UINT	GetConsoleOutputCP();
 		DWORD	GetConsoleTitleW(LPWSTR lpConsoleTitle, DWORD nSize);
 		BOOL	GetConsoleScreenBufferInfo(HANDLE hConsoleOutput, PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
+		BOOL	GetConsoleScreenBufferInfoEx(HANDLE hConsoleOutput, PCONSOLE_SCREEN_BUFFER_INFOEX lpConsoleScreenBufferInfoEx);
 		HWND	GetConsoleWindow();
 		SHORT	GetKeyState(INT nVirtKey);
 		COORD	GetLargestConsoleWindowSize(HANDLE hConsoleOutput);
@@ -58,6 +76,9 @@ version(Windows) {
 		BOOL	SetConsoleMode(HANDLE hConsoleHandle,DWORD dwMode);
 		BOOL	SetConsoleOuputCP(UINT wCodePageID);
 		BOOL	SetConsoleScreenBufferSize(HANDLE hConsoleOutput, COORD dwSize);
+		alias BOOL function(HANDLE hConsoleOutput, PCONSOLE_SCREEN_BUFFER_INFOEX lpConsoleScreenBufferInfoEx) SetConsoleScreenBufferInfoEx;
+		//BOOL	SetConsoleScreenBufferInfoEx(HANDLE hConsoleOutput, 
+			//									 PCONSOLE_SCREEN_BUFFER_INFOEX lpConsoleScreenBufferInfoEx);
 		BOOL	SetConsoleTextAttribute(HANDLE hConsoleOutput, WORD wAttributes);
 		BOOL	SetConsoleTitleW(LPCWSTR lpConsoleTitle);
 		BOOL	SetConsoleCursorInfo(HANDLE hConsoleOutput, const CONSOLE_CURSOR_INFO *lpConsoleCursorInfo);
@@ -650,9 +671,28 @@ void setControlCInput(bool isInput) {
 	}
 }
 
-void setCursorLeft(int columnPos) {
+/**
+* setCursorLeft Sets the column's position of the cursor
+* param columnPos Cursor column's position
+*/
+void setCursorLeft(short columnPos) {
+	version(Windows) {
+		CONSOLE_SCREEN_BUFFER_INFOEX csbi;
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		GetConsoleScreenBufferInfoEx(hConsole, &csbi);
+
+		COORD pos = { columnPos, csbi.dwCursorPosition.Y };
+
+		csbi.dwCursorPosition = pos;
+
+		SetConsoleScreenBufferInfoEx(hConsole, &csbi);
+	}
 }
 
+/**
+* setCursorPosition Sets the cursor's position.
+*/
 void setCursorPosition(int row, int col) {
 }
 
