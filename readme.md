@@ -20,4 +20,4 @@ Author(s):
 * Alexandre "TryHard" Leblanc, <alex.cs00 [at] mail [dot] com>, <www.mrtryhard.info>
 
 Notes:
-[1] Only Windows is supported at the moment
+[1] Only Windows is supported at the momentddd
