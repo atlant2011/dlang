@@ -369,13 +369,13 @@ public string getError() @system {
 * returns Input encoding
 */
 public ConsoleEncoding getInputEncoding() @system {
-	ConsoleEncoding enc;
+	ConsoleEncoding enc = ConsoleEncoding.UTF_8;
 
 	version(Windows) {
 		enc = cast(ConsoleEncoding)(GetConsoleCP());
 	}
 
-	return ConsoleEncoding.UTF_8;
+	return enc;
 }
 
 /**
@@ -411,11 +411,11 @@ public short getMaxWindowWidth() @system {
 }
 
 /**
-* getOutputEncoding Gets the output encoding.
+* getOutputEncoding Gets the output encoding (default is UTF_8 for D).
 * returns Output encoding
 */
 public ConsoleEncoding getOutputEncoding() @system { 
-	ConsoleEncoding enc;
+	ConsoleEncoding enc = ConsoleEncoding.UTF_8;
 
 	version(Windows) {
 		import std.stdio;
